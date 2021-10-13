@@ -28,6 +28,7 @@ interface userInterface extends metaUserInterface {
     pictureColor: string
   }
   // posts: Post[] - N:M
+  // podcasts: Podcast [] - N:M
   stats?: Stats
 }
 

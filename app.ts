@@ -1,1 +1,0 @@
-import User from './models/social/user.model'

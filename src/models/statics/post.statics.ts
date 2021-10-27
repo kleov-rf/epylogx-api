@@ -1,166 +1,101 @@
-import { Schema } from 'mongoose'
-import { minifiedISOString } from '../../helpers/adjust-input'
-import { isMongoId, isValidMongoLatLong } from '../../helpers/input-validators'
+import { isValidObjectId, Schema } from 'mongoose'
+import validator from 'validator'
+import { isValidMongoLatLong } from '../../helpers/input-validators'
 
 const assignPostStatics = (postSchema: Schema) => {
-  // Retrieve psot by ObjectId
-  postSchema.statics.getOnePostByObjectId = async function (objectId: string) {
-    // First we check if our parameter is a valid ObjectId
-    const { isValid, reason } = isMongoId(objectId)
-    if (!isValid) {
-      throw new Error(reason)
+  interface postDataQuery {
+    id?: string
+    title?: string
+    type?: string
+    sinceUpload?: string
+    beforeUpload?: string
+    sinceRelease?: string
+    beforeRelease?: string
+    coords?: {
+      latitude: Number
+      longitude: Number
+      maxRadius?: Number
+    }
+  }
+
+  postSchema.statics.getPost = async function ({ id }: postDataQuery) {
+    const query = {}
+    if (id && isValidObjectId(id)) {
+      Object.assign(query, { _id: id })
     }
 
-    // Then we execute our query by Id
-    const post = await this.findById(objectId)
+    const post = await this.findOne(query)
 
-    // Before returning our data we must check if we're returning any user results
     if (!post) {
-      throw new Error(
-        `Couldn't find any post results with objectId ${objectId}`
-      )
+      throw new Error(`Couldn't find any post with data ${query}`)
     }
 
     return post
   }
 
-  // Get posts that has been uploaded since date
-  postSchema.statics.getManyPostsSinceUpload = async function (date: Date) {
-    // First we check that the date passed by parameter is not after current date
-    if (date.getTime() > new Date().getTime()) {
-      throw new Error(
-        `Can't search posts since uploadDate '${date.toLocaleString}' because it's from the future`
-      )
+  postSchema.statics.getPosts = async function ({
+    type,
+    title,
+    sinceUpload,
+    beforeUpload,
+    sinceRelease,
+    beforeRelease,
+    coords,
+  }: postDataQuery) {
+    const types = ['article', 'picture', 'audio', 'video']
+    const query = {}
+
+    if (type && validator.isAlpha(type) && validator.isIn(type, types)) {
+      Object.assign(query, { type: type })
     }
 
-    // Then we execute our query
-    const posts = await this.find({
-      uploadDate: { $gte: minifiedISOString(date) },
-    })
-
-    // Before returning our data we must check if we're returning any user results
-    if (!posts) {
-      throw new Error(
-        `Couldn't find any post since uploadDate ${date.toLocaleDateString}`
-      )
+    if (title && validator.isAlphanumeric(title, 'es-ES', { ignore: ' -' })) {
+      const regexTitle = new RegExp(title)
+      Object.assign(query, { 'info.title': regexTitle })
     }
 
-    return posts
-  }
-
-  // Get posts that has been uploaded before date
-  postSchema.statics.getManyPostsBeforeUpload = async function (date: Date) {
-    // First we check that the date passed by parameter is not after current date
-    if (date.getTime() > new Date().getTime()) {
-      throw new Error(
-        `Can't search posts before uploadDate '${date.toLocaleString}' hasn't passed (yet)`
-      )
+    if (sinceUpload && validator.isISO8601(sinceUpload)) {
+      Object.assign(query, { uploadDate: { $gte: sinceUpload } })
     }
 
-    // Then we execute our query
-    const posts = await this.find({
-      uploadDate: { $lte: minifiedISOString(date) },
-    })
-
-    // Before returning our data we must check if we're returning any user results
-    if (!posts) {
-      throw new Error(
-        `Couldn't find any post before uploadDate ${date.toLocaleDateString}`
-      )
+    if (beforeUpload && validator.isISO8601(beforeUpload)) {
+      Object.assign(query, { uploadDate: { $lte: beforeUpload } })
     }
 
-    return posts
-  }
-
-  // Get posts that has been published since date
-  postSchema.statics.getManyPostsSinceRelease = async function (date: Date) {
-    // First we check that the date passed by parameter is not after current date
-    if (date.getTime() > new Date().getTime()) {
-      throw new Error(
-        `Can't search posts since releaseDate '${date.toLocaleString}' because it's from the future`
-      )
+    if (sinceRelease && validator.isISO8601(sinceRelease)) {
+      Object.assign(query, { releaseDate: { $gte: sinceRelease } })
     }
 
-    // Then we execute our query
-    const posts = await this.find({
-      releaseDate: { $gte: minifiedISOString(date) },
-    })
-
-    // Before returning our data we must check if we're returning any user results
-    if (!posts) {
-      throw new Error(
-        `Couldn't find any post since releaseDate ${date.toLocaleDateString}`
-      )
+    if (beforeRelease && validator.isISO8601(beforeRelease)) {
+      Object.assign(query, { releaseDate: { $lte: beforeRelease } })
     }
 
-    return posts
-  }
-
-  // Get posts that has been released before date
-  postSchema.statics.getManyPostsBeforeRelease = async function (date: Date) {
-    // First we check that the date passed by parameter is not after current date
-    if (date.getTime() > new Date().getTime()) {
-      throw new Error(
-        `Can't search posts before releaseDate '${date.toLocaleString}' hasn't passed (yet)`
-      )
-    }
-
-    // Then we execute our query
-    const posts = await this.find({
-      releaseDate: { $lte: minifiedISOString(date) },
-    })
-
-    // Before returning our data we must check if we're returning any user results
-    if (!posts) {
-      throw new Error(
-        `Couldn't find any post before releaseDate ${date.toLocaleDateString}`
-      )
-    }
-
-    return posts
-  }
-
-  // Get posts that has been uploaded near lon, lat
-  postSchema.statics.getManyPostsNear = async function (
-    longitude: Number,
-    latitude: Number,
-    maxRadius: Number = 1000
-  ) {
-    // First we check if our parameter is a valid ObjectId
-    const { isValid, reason } = isValidMongoLatLong(longitude, latitude)
-    if (!isValid) {
-      throw new Error(reason)
-    }
-
-    // We try to execute our query
-    const posts = this.find({
-      location: {
-        $near: {
-          $geometry: {
-            type: 'Point',
-            coordinates: [longitude, latitude],
+    if (
+      coords &&
+      isValidMongoLatLong(coords.longitude, coords.latitude).isValid
+    ) {
+      const { longitude, latitude, maxRadius = 1000 } = coords
+      Object.assign(query, {
+        location: {
+          $near: {
+            $geometry: {
+              type: 'Point',
+              coordinates: [longitude, latitude],
+            },
+            $maxDistance: maxRadius,
           },
-          $maxDistance: maxRadius,
         },
-      },
-    })
+      })
+    }
 
-    // Before returning our data we must check if we're returning any user results
+    const posts = await this.find(query)
+
     if (!posts) {
-      throw new Error(
-        `Couldn't find any post near long: ${longitude}, lat: ${latitude}  `
-      )
+      throw new Error(`Couldn't find any post with data: ${query}`)
     }
 
     return posts
   }
-
-  postSchema.statics.getAuthors = async function () {}
-  postSchema.statics.getAllCategories = async function () {}
-  postSchema.statics.getMainCategories = async function () {}
-  postSchema.statics.getSubCategories = async function () {}
-  postSchema.statics.getMainComments = async function () {}
-  postSchema.statics.getAllComments = async function () {}
 }
 
 export default assignPostStatics

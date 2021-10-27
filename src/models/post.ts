@@ -4,14 +4,14 @@ import assignPostStatics from './statics/post.statics'
 import assignPostVirtuals from './virtuals/post.virtuals'
 
 interface postInterface extends DescriptableInterface {
-  type: string /* 'pdf' | 'podcast' | 'art' | 'video' */
+  type: Schema.Types.ObjectId /* 'pdf' | 'podcast' | 'art' | 'video' */
   authors: string[] /* User[] N:M */
   categories: {
-    mains: string[] /* Category[] N:M */
-    subs: string[] /* Category[] N:M */
+    mains: Schema.Types.ObjectId[] /* Category[] N:M */
+    subs: Schema.Types.ObjectId[] /* Category[] N:M */
   }
   social?: {
-    comments: string[] /* Comment[] 1:N */
+    comments: Schema.Types.ObjectId[] /* Comment[] 1:N */
     commentsEnabled: boolean
     likes: number
   }
@@ -35,9 +35,8 @@ interface postInterface extends DescriptableInterface {
 const PostSchema = new Schema<postInterface>(
   {
     type: {
-      type: String,
-      required: true,
-      enum: ['article', 'picture', 'audio', 'video'],
+      type: Schema.Types.ObjectId,
+      ref: 'PostTypes',
     },
     social: {
       commentsEnabled: {

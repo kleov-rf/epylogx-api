@@ -1,45 +1,5 @@
 import validator from 'validator'
 
-const isSafeString = (input: string): { isValid: boolean; reason?: string } => {
-  if (!validator.isLength(input, { min: 3, max: 50 })) {
-    return {
-      isValid: false,
-      reason: `Input size (${input.length}) must be between 3 and 50`,
-    }
-  }
-
-  if (!validator.isAlphanumeric(input, 'es-ES')) {
-    return {
-      isValid: false,
-      reason: `Input (${input}) is not a safe query for our database`,
-    }
-  }
-
-  return { isValid: true }
-}
-
-const isValidEmail = (input: string): { isValid: boolean; reason?: string } => {
-  if (!validator.isEmail(input)) {
-    return {
-      isValid: false,
-      reason: `Input (${input}) is not a valid email`,
-    }
-  }
-
-  return { isValid: true }
-}
-
-const isMongoId = (input: string): { isValid: boolean; reason?: string } => {
-  if (!validator.isMongoId(input)) {
-    return {
-      isValid: false,
-      reason: `Input (${input}) is not a valid MongoDB ObjectId`,
-    }
-  }
-
-  return { isValid: true }
-}
-
 const isValidMongoLatLong = (
   longitude: Number,
   latitude: Number
@@ -61,4 +21,4 @@ const isValidMongoLatLong = (
   return { isValid: true }
 }
 
-export { isSafeString, isValidEmail, isMongoId, isValidMongoLatLong }
+export { isValidMongoLatLong }

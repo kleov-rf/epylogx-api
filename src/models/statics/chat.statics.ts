@@ -68,7 +68,7 @@ const assignChatStatics = (chatSchema: Schema) => {
       Object.assign(query, { receiver: to })
     }
 
-    if (validator.isAlphanumeric(text)) {
+    if (text && validator.isAlphanumeric(text, 'es-ES', { ignore: ' ;,.¿?¡!' })) {
       Object.assign(query, { text: text })
     }
 

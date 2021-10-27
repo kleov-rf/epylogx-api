@@ -1,5 +1,5 @@
 import { model, Schema } from 'mongoose'
-import assignChatStatics from './statics/chat.statics'
+import assignChatStatics from '../statics/chat.statics'
 
 interface chatEntryInterface {
   transmitter: Schema.Types.ObjectId /* User */
@@ -32,6 +32,7 @@ const ChatSchema = new Schema<chatEntryInterface>(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+    _id: false,
   }
 )
 

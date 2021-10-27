@@ -5,40 +5,22 @@ const assignUserVirtuals = (UserSchema: Schema) => {
   // _id | follower | followed
 
   UserSchema.virtual('social.followers', {
-    ref: 'Follows',
+    ref: 'Follow',
     localField: '_id',
     foreignField: 'followed',
   })
 
   UserSchema.virtual('social.following', {
-    ref: 'Follows',
+    ref: 'Follow',
     localField: '_id',
     foreignField: 'follower',
-  })
-
-  // -------- NOTIFICATIONS --------
-  // _id | notified | notifier
-
-  UserSchema.virtual('social.toNotify', {
-    ref: 'Notifications',
-    localField: '_id',
-    foreignField: 'notified',
-  })
-
-  // -------- SHOP HISTORY --------
-  // _id | customer (user) | storeOrder
-
-  UserSchema.virtual('store.history', {
-    ref: 'ShopHistory',
-    localField: '_id',
-    foreignField: 'customer',
   })
 
   // -------- CATEGORY INTEREST --------
   // _id | interested | category
 
   UserSchema.virtual('postsPreferences.interests', {
-    ref: 'CategoryInterests',
+    ref: 'UserInterest',
     localField: '_id',
     foreignField: 'interested',
   })
@@ -47,7 +29,7 @@ const assignUserVirtuals = (UserSchema: Schema) => {
   // _id | user | post
 
   UserSchema.virtual('postsPreferences.saved', {
-    ref: 'PostsSaved',
+    ref: 'UserSavedPost',
     localField: '_id',
     foreignField: 'user',
   })
@@ -56,7 +38,7 @@ const assignUserVirtuals = (UserSchema: Schema) => {
   // _id | user | post
 
   UserSchema.virtual('postsPreferences.liked', {
-    ref: 'PostsLiked',
+    ref: 'UserLikedPost',
     localField: '_id',
     foreignField: 'user',
   })
@@ -74,7 +56,7 @@ const assignUserVirtuals = (UserSchema: Schema) => {
   // _id | owner | podcast
 
   UserSchema.virtual('podcasts', {
-    ref: 'PodcastsOwners',
+    ref: 'UserPodcast',
     localField: '_id',
     foreignField: 'owner',
   })

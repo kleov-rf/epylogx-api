@@ -1,5 +1,3 @@
-import validator from 'validator'
-
 const isValidMongoLatLong = (
   longitude: Number,
   latitude: Number

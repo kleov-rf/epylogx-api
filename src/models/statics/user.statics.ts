@@ -1,55 +1,73 @@
-import { isValidObjectId, Schema } from 'mongoose'
+import { Schema } from 'mongoose'
 import validator from 'validator'
+import { usersDataQuery } from './interfaces'
 
 const assignUserStatics = (userSchema: Schema) => {
-  interface usersDataQuery {
-    id?: string
-    email?: string
-    name?: string
-  }
-
   userSchema.statics.getUser = async function ({
     id,
+    userId,
     email,
     name,
+    isAdmin = false,
   }: usersDataQuery) {
     const query = {}
 
-    if (id && isValidObjectId(id)) {
+    if (!isAdmin) {
+      Object.assign(query, { isActive: true })
+    }
+
+    if (id && validator.isMongoId(id)) {
       Object.assign(query, { _id: id })
-    } else if (id && validator.isAlphanumeric(id)) {
-      Object.assign(query, { userId: id })
+    }
+
+    if (
+      userId &&
+      validator.isAlphanumeric(userId, undefined, { ignore: '_-.' })
+    ) {
+      Object.assign(query, { userId })
     }
 
     if (
       email &&
       validator.isEmail(email, { domain_specific_validation: true })
     ) {
-      Object.assign(query, { email: email })
+      Object.assign(query, { email })
     }
 
     if (name && validator.isAlpha(name, 'es-ES', { ignore: ' ' })) {
       Object.assign(query, { fullName: name })
     }
 
+    console.log(query)
     const user = await this.findOne(query)
 
     if (!user) {
-      throw new Error(`Couldn't find any user results with data: ${query}`)
+      throw new Error(
+        `Couldn't find any user results with data: ${query.toString()}`
+      )
     }
 
     return user
   }
 
   userSchema.statics.getUsers = async function ({
-    id,
+    userId,
     email,
     name,
+    isAdmin = false,
   }: usersDataQuery) {
     const query = {}
 
-    if (id && !isValidObjectId(id) && validator.isAlphanumeric(id)) {
-      const regexId = new RegExp(id)
+    if (!isAdmin) {
+      Object.assign(query, { isActive: true })
+    }
+
+    if (
+      userId &&
+      !validator.isMongoId(userId) &&
+      validator.isAlphanumeric(userId)
+    ) {
+      const regexId = new RegExp(userId, 'i')
       Object.assign(query, { userId: regexId })
     }
 
@@ -57,13 +75,15 @@ const assignUserStatics = (userSchema: Schema) => {
       email &&
       validator.isAlphanumeric(email, undefined, { ignore: '@._-' })
     ) {
-      const regexEmail = new RegExp(email)
+      const regexEmail = new RegExp(`${email}@`, 'i')
       Object.assign(query, { email: regexEmail })
     }
 
-    if (name && validator.isAlpha(name, 'es-ES', { ignore: ' ' })) {
-      const regexName = new RegExp(name)
-      Object.assign(query, { fullName: regexName })
+    if (name && validator.isAlpha(name, 'es-ES')) {
+      const regexName = new RegExp(name, 'i')
+      Object.assign(query, {
+        $or: [{ givenName: regexName }, { familyName: regexName }],
+      })
     }
 
     const users = await this.find(query)

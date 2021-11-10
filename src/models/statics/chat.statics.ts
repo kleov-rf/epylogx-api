@@ -2,6 +2,7 @@ import moment from 'moment'
 import { isValidObjectId, Schema } from 'mongoose'
 import validator from 'validator'
 import { minifiedISOString } from '../../helpers/adjust-input'
+import { entriesDataQuery } from './interfaces'
 
 const assignChatStatics = (chatSchema: Schema) => {
   chatSchema.statics.getRecentChatsToId = async function (
@@ -10,7 +11,7 @@ const assignChatStatics = (chatSchema: Schema) => {
   ) {
     const query = {}
 
-    if (!isValidObjectId(userId)) {
+    if (!validator.isMongoId(userId)) {
       throw new Error('Not a valid userId')
     }
 
@@ -43,14 +44,6 @@ const assignChatStatics = (chatSchema: Schema) => {
     return chats
   }
 
-  interface entriesDataQuery {
-    from?: string
-    to?: string
-    text?: string
-    recentDays?: number
-    isLiked?: boolean
-  }
-
   chatSchema.statics.getEntries = async function ({
     from,
     to,
@@ -60,15 +53,18 @@ const assignChatStatics = (chatSchema: Schema) => {
   }: entriesDataQuery) {
     const query = { isLiked }
 
-    if (from && isValidObjectId(from)) {
+    if (from && validator.isMongoId(from)) {
       Object.assign(query, { transmitter: from })
     }
 
-    if (to && isValidObjectId(to)) {
+    if (to && validator.isMongoId(to)) {
       Object.assign(query, { receiver: to })
     }
 
-    if (text && validator.isAlphanumeric(text, 'es-ES', { ignore: ' ;,.¿?¡!' })) {
+    if (
+      text &&
+      validator.isAlphanumeric(text, 'es-ES', { ignore: ' ;,.¿?¡!' })
+    ) {
       Object.assign(query, { text: text })
     }
 

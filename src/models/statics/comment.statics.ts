@@ -1,14 +1,8 @@
 import { isValidObjectId, Schema } from 'mongoose'
 import validator from 'validator'
+import { commentDataQuery } from './interfaces'
 
 const assignCommentStatics = (commentSchema: Schema) => {
-  interface commentDataQuery {
-    author?: string
-    post?: string
-    text?: string
-    superComment?: string
-    isHidden?: boolean
-  }
   commentSchema.statics.getComments = async function ({
     author,
     post,
@@ -17,10 +11,10 @@ const assignCommentStatics = (commentSchema: Schema) => {
     isHidden,
   }: commentDataQuery) {
     const query = {}
-    if (author && isValidObjectId(author)) {
+    if (author && validator.isMongoId(author)) {
       Object.assign(query, { author })
     }
-    if (post && isValidObjectId(post)) {
+    if (post && validator.isMongoId(post)) {
       Object.assign(query, { post })
     }
     if (
@@ -30,7 +24,7 @@ const assignCommentStatics = (commentSchema: Schema) => {
       const textRegex = new RegExp(text)
       Object.assign(query, { text: textRegex })
     }
-    if (superComment && isValidObjectId(superComment)) {
+    if (superComment && validator.isMongoId(superComment)) {
       Object.assign(query, { superComment })
     }
     if (isHidden != undefined) {

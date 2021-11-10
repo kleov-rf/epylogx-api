@@ -1,24 +1,11 @@
 import { isValidObjectId, Schema } from 'mongoose'
 import validator from 'validator'
+import { adminDataQuery } from './interfaces'
 
 const assignAdminStatics = (adminSchema: Schema) => {
-  interface adminDataQuery {
-    id?: string
-    isSub?: boolean
-    email?: string
-    name?: string
-    roles?: {
-      userManage?: boolean
-      adminManage?: boolean
-      postManage?: boolean
-      categoryManage?: boolean
-      storeManage?: boolean
-    }
-    subordinateOf?: string
-  }
-
   adminSchema.statics.getAdmin = async function ({
     id,
+    adminId,
     email,
     name,
     isSub,
@@ -27,10 +14,14 @@ const assignAdminStatics = (adminSchema: Schema) => {
   }: adminDataQuery) {
     const query = {}
 
-    if (id && isValidObjectId(id)) {
+    if (id && validator.isMongoId(id)) {
       Object.assign(query, { _id: id })
-    } else if (id && validator.isAlphanumeric(id)) {
-      Object.assign(query, { userId: id })
+    }
+    if (
+      adminId &&
+      validator.isAlphanumeric(adminId, undefined, { ignore: '_-.' })
+    ) {
+      Object.assign(query, { adminId })
     }
     if (
       email &&
@@ -44,7 +35,7 @@ const assignAdminStatics = (adminSchema: Schema) => {
     if (isSub !== undefined) {
       Object.assign(query, { superAdmin: { $exists: isSub } })
     }
-    if (subordinateOf && isValidObjectId(subordinateOf)) {
+    if (subordinateOf && validator.isMongoId(subordinateOf)) {
       Object.assign(query, { superAdmin: subordinateOf })
     }
     if (roles) {
@@ -70,29 +61,29 @@ const assignAdminStatics = (adminSchema: Schema) => {
   }: adminDataQuery) {
     const query = {}
 
-    if (id && !isValidObjectId(id) && validator.isAlphanumeric(id)) {
-      const regexId = new RegExp(id)
-      Object.assign(query, { userId: regexId })
+    if (id && !validator.isMongoId(id) && validator.isAlphanumeric(id)) {
+      const regexId = new RegExp(id, 'i')
+      Object.assign(query, { adminId: regexId })
     }
     if (
       email &&
       validator.isAlphanumeric(email, undefined, { ignore: '@._-' })
     ) {
-      const regexEmail = new RegExp(email)
+      const regexEmail = new RegExp(`${email}@`, 'i')
       Object.assign(query, { email: regexEmail })
     }
     if (name && validator.isAlpha(name, 'es-ES', { ignore: ' ' })) {
-      const regexName = new RegExp(name)
+      const regexName = new RegExp(name,     'i')
       Object.assign(query, { fullName: regexName })
     }
     if (areSubs !== undefined) {
       Object.assign(query, { superAdmin: { $exists: areSubs } })
     }
-    if (subordinatesOf && isValidObjectId(subordinatesOf)) {
+    if (subordinatesOf && validator.isMongoId(subordinatesOf)) {
       Object.assign(query, { superAdmin: subordinatesOf })
     }
     if (roles) {
-      Object.assign(query, { roles: roles })
+      Object.assign(query, { ...roles })
     }
 
     const admins = await this.find(query)

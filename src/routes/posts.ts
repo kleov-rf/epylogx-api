@@ -1,17 +1,21 @@
-import { Request, Response, Router } from 'express'
+import { Router } from 'express'
+import {
+  postsDelete,
+  postsGet,
+  postsPost,
+  postsPut,
+} from '../controllers/posts'
 
 const router = Router()
 
-router.get('/', (req: Request, res: Response) => {
-  res.json({
-    msg: 'GET posts',
-  })
-})
+router.get('/', [], postsGet)
 
-router.get('/:id', (req: Request, res: Response) => {
-  res.json({
-    msg: 'GET posts by Id',
-  })
-})
+router.get('/:id', [], postsGet)
+
+router.post('/', [], postsPost)
+
+router.put('/:id', [], postsPut)
+
+router.delete('/:id', [], postsDelete)
 
 export default router

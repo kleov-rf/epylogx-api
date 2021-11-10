@@ -100,4 +100,4 @@ class epyServer {
   }
 }
 
-export default epyServer
+export { epyServer as Server }

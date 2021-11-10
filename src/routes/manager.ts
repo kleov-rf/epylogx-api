@@ -1,17 +1,21 @@
-import { Request, Response, Router } from 'express'
+import { Router } from 'express'
+import {
+  managerDelete,
+  managerGet,
+  managerPost,
+  managerPut,
+} from '../controllers/manager'
 
 const router = Router()
 
-router.get('/', (req: Request, res: Response) => {
-  res.json({
-    msg: 'GET manager',
-  })
-})
+router.get('/', [], managerGet)
 
-router.get('/:id', (req: Request, res: Response) => {
-  res.json({
-    msg: 'GET manager by Id',
-  })
-})
+router.get('/:id', [], managerGet)
+
+router.post('/', [], managerPost)
+
+router.put('/:id', [], managerPut)
+
+router.delete('/:id', [], managerDelete)
 
 export default router

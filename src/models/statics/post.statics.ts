@@ -1,26 +1,12 @@
 import { isValidObjectId, Schema } from 'mongoose'
 import validator from 'validator'
 import { isValidMongoLatLong } from '../../helpers/input-validators'
+import { postDataQuery } from './interfaces'
 
 const assignPostStatics = (postSchema: Schema) => {
-  interface postDataQuery {
-    id?: string
-    title?: string
-    type?: string
-    sinceUpload?: string
-    beforeUpload?: string
-    sinceRelease?: string
-    beforeRelease?: string
-    coords?: {
-      latitude: Number
-      longitude: Number
-      maxRadius?: Number
-    }
-  }
-
   postSchema.statics.getPost = async function ({ id }: postDataQuery) {
     const query = {}
-    if (id && isValidObjectId(id)) {
+    if (id && validator.isMongoId(id)) {
       Object.assign(query, { _id: id })
     }
 

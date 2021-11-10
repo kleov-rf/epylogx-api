@@ -1,17 +1,21 @@
-import { Request, Response, Router } from 'express'
+import { Router } from 'express'
+import {
+  chatsDelete,
+  chatsGet,
+  chatsPost,
+  chatsPut,
+} from '../controllers/chats'
 
 const router = Router()
 
-router.get('/', (req: Request, res: Response) => {
-  res.json({
-    msg: 'GET chats',
-  })
-})
+router.get('/', [], chatsGet)
 
-router.get('/:id', (req: Request, res: Response) => {
-  res.json({
-    msg: 'GET chats by Id',
-  })
-})
+router.get('/:id', [], chatsGet)
+
+router.post('/', [], chatsPost)
+
+router.put('/:id', [], chatsPut)
+
+router.delete('/:id', [], chatsDelete)
 
 export default router

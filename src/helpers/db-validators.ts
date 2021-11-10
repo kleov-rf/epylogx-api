@@ -1,30 +1,47 @@
-import User from '../models/user'
+import { isValidObjectId } from 'mongoose'
+import { Admin, Audio, Post, User } from '../models'
 
-const isActiveDocument = () => {}
-
-const metauserExistsByEmail = () => {}
-
-const userExistsById = async (_id: string) => {
-  const userExists = await User.findById(_id)
-  if (!userExists) {
-    throw new Error(`User Objectid (${_id}) doesn't exist in out database.`)
-  }
-}
-const userExistsByUserId = async (userId: string) => {
-  const userExists = await User.findOne({ userId, isActive: true })
-  if (!userExists) {
-    throw new Error(`userId (${userId}) doesn't exist in out database.`)
+const existsUserByObjectId = async (_id: string) => {
+  const user = await User.findById(_id)
+  if (!user) {
+    throw new Error(`${_id} is not in our user database`)
   }
 }
 
-const adminExistsById = () => {}
-const adminExistsByAminId = () => {}
+const existsAdminByObjectId = async (_id: string) => {
+  const admin = await Admin.findById(_id)
+  if (!admin) {
+    throw new Error(`${_id} is not in our admin database`)
+  }
+}
 
-const categoryExistsById = () => {}
-const categoryExistsByName = () => {}
+const existsMetaUserId = async (metaUserId: string) => {
+  const [user, admin] = await Promise.all([
+    User.findOne({ userId: metaUserId }),
+    Admin.findOne({ adminId: metaUserId }),
+  ])
 
-const postExistsById = () => {}
-const isValidPostType = () => {}
-const isValidISCED = () => {}
+  if (user || admin) {
+    throw new Error(`User with ${metaUserId} already exists. Try another one.`)
+  }
+}
 
-export { userExistsById }
+const existsEmail = async (email: string) => {
+  const [user, admin] = await Promise.all([
+    User.findOne({ email }),
+    Admin.findOne({ email }),
+  ])
+
+  if (user || admin) {
+    throw new Error(
+      `User with email ${email} already exists. Try loggin into your account`
+    )
+  }
+}
+
+export {
+  existsUserByObjectId,
+  existsAdminByObjectId,
+  existsMetaUserId,
+  existsEmail,
+}

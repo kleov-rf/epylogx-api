@@ -1,17 +1,21 @@
-import { Request, Response, Router } from 'express'
+import { Router } from 'express'
+import {
+  podcastDelete,
+  podcastGet,
+  podcastPost,
+  podcastPut,
+} from '../controllers/podcasts'
 
 const router = Router()
 
-router.get('/', (req: Request, res: Response) => {
-  res.json({
-    msg: 'GET podcasts',
-  })
-})
+router.get('/', [], podcastGet)
 
-router.get('/:id', (req: Request, res: Response) => {
-  res.json({
-    msg: 'GET podcasts by Id',
-  })
-})
+router.get('/:id', [], podcastGet)
+
+router.post('/', [], podcastPost)
+
+router.put('/:id', [], podcastPut)
+
+router.delete('/:id', [], podcastDelete)
 
 export default router

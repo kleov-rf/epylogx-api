@@ -26,6 +26,16 @@ interface CategoryModel extends Model<CategoryInterface> {
   getCategories(data: categoriesDataQuery): any
 }
 
+interface iscedInterface {
+  level: number
+  description: string
+}
+
+interface iscedModel extends Model<iscedInterface> {
+  getISCEDS(): any
+  getISCED(level: number): any
+}
+
 interface commentInterface {
   author: string /* User.id */
   post: string
@@ -110,4 +120,6 @@ export {
   podcastModel,
   postModel,
   postCategoryModel,
+  iscedInterface,
+  iscedModel,
 }

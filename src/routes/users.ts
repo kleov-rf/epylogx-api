@@ -26,7 +26,10 @@ router.post(
   '/',
   [
     check('userId', 'userId field is required').notEmpty(),
-    check('userId', 'userId field value must match a-Z 0-9 _-. and length {3,15}')
+    check(
+      'userId',
+      'userId field value must match a-Z 0-9 _-. and length {3,15}'
+    )
       .isAlphanumeric(undefined, { ignore: '_-.' })
       .isLength({ min: 3, max: 15 }),
     check('userId').custom(existsMetaUserId),
@@ -67,6 +70,33 @@ router.put(
     hasRoles({ userManage: true }),
     check('id', '_id must be an Mongo Object Id').isMongoId(),
     check('id').custom(existsUserByObjectId),
+    check(
+      'userId',
+      'userId field value must match a-Z 0-9 _-. and length {3,15}'
+    )
+      .optional()
+      .isAlphanumeric(undefined, { ignore: '_-.' })
+      .isLength({ min: 3, max: 15 }),
+    check('userId').optional().custom(existsMetaUserId),
+    check('givenName', 'First name must only contain letters')
+      .optional()
+      .isAlpha('es-ES', { ignore: ' ' }),
+    check('familyName', 'Last name must only contain letters')
+      .optional()
+      .isAlpha('es-ES', { ignore: ' ' }),
+    check('email', 'email value must be a valid email').optional().isEmail({
+      domain_specific_validation: true,
+    }),
+    check('email').optional().custom(existsEmail),
+    check(
+      'password',
+      'password value length must be between 6 and 30 characters'
+    )
+      .optional()
+      .isLength({ min: 6, max: 30 }),
+    check('birthDate', 'birthDate is not in a correct ISO format')
+      .optional()
+      .isISO8601(),
     validateFields,
   ],
   usersPut

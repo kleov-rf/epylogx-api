@@ -75,7 +75,8 @@ const assignUserStatics = (userSchema: Schema) => {
       email &&
       validator.isAlphanumeric(email, undefined, { ignore: '@._-' })
     ) {
-      const regexEmail = new RegExp(`${email}@`, 'i')
+      const regexEmailBase = email.includes('@') ? email : `${email}@`
+      const regexEmail = new RegExp(regexEmailBase, 'i')
       Object.assign(query, { email: regexEmail })
     }
 

@@ -32,7 +32,13 @@ interface iscedInterface {
 }
 
 interface iscedModel extends Model<iscedInterface> {
-  getISCEDS(): any
+  getISCEDS({
+    aboveLevel,
+    belowLevel,
+  }: {
+    aboveLevel?: number
+    belowLevel?: number
+  }): any
   getISCED(level: number): any
 }
 
@@ -55,12 +61,12 @@ interface podcastInterface extends DescriptableInterface {
 
 interface podcastModel extends Model<podcastInterface> {
   getPodcasts(data: podcastDataQuery): any
+  getPodcast(data: { id: string }): any
 }
 
 interface podcastDataQuery {
-  _id: string
-  podcastId: string
-  title: string
+  podcastId?: string
+  title?: string
 }
 
 interface postInterface extends DescriptableInterface {
@@ -79,6 +85,7 @@ interface postInterface extends DescriptableInterface {
   uploadDate: Date
   releaseDate?: Date
   fileURL: string
+  previewImgURL: string
   location?: {
     type: {
       type: String

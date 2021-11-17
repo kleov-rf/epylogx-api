@@ -85,7 +85,7 @@ interface userPodcastInterface {
 }
 
 interface UserPodcastModel extends Model<userPodcastInterface> {
-  getUsersPodcasts(data: userInterestsInterface): any
+  getUsersPodcasts(data: userPodcastInterface): any
 }
 
 interface userSavesPostInterface {

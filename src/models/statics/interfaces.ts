@@ -10,6 +10,8 @@ interface adminDataQuery {
     postManage?: boolean
     categoryManage?: boolean
     storeManage?: boolean
+    podcastManage?: boolean
+    storeOrdersManage?: boolean
   }
   subordinateOf?: string
 }

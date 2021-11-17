@@ -12,7 +12,6 @@ const UserSchema = new Schema<userInterface>(
       required: [true, 'userId is a required field'],
       unique: true,
     },
-    pictureURL: String,
     social: {
       networks: [
         {

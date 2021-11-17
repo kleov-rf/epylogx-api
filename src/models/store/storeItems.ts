@@ -9,6 +9,10 @@ const StoreItemSchema = new Schema<storeItemInterface>(
       type: Number,
       default: 0,
     },
+    stock: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -16,11 +20,28 @@ const StoreItemSchema = new Schema<storeItemInterface>(
   }
 ).add(DescriptableSchema)
 
+StoreItemSchema.statics.getStoreItem = async function ({ id }) {
+  const query = {}
+
+  if (id && validator.isMongoId(id)) {
+    Object.assign(query, { _id: id })
+  }
+
+  const storeItem = await this.findOne(query)
+
+  if (!storeItem) {
+    throw new Error(`Couldn't find any storeItems results with data: ${query}`)
+  }
+
+  return storeItem
+}
+
 StoreItemSchema.statics.getStoreItems = async function ({
   info: { title },
   price,
   abovePrice,
   belowPrice,
+  hasStock,
   isActive,
 }: storeItemInterface) {
   const query = {}
@@ -40,6 +61,12 @@ StoreItemSchema.statics.getStoreItems = async function ({
   if (isActive != undefined) {
     Object.assign(query, { isActive })
   }
+  if (hasStock) {
+    Object.assign(query, { stock: { $gt: 0 } })
+  }
+  if (!hasStock) {
+    Object.assign(query, { stock: { $eq: 0 } })
+  }
 
   const storeItems = this.find(query)
 
@@ -50,6 +77,10 @@ StoreItemSchema.statics.getStoreItems = async function ({
   return storeItems
 }
 
-const StoreItem = model<storeItemInterface, StoreItemModel>('StoreItem', StoreItemSchema, 'storeItems')
+const StoreItem = model<storeItemInterface, StoreItemModel>(
+  'StoreItem',
+  StoreItemSchema,
+  'storeItems'
+)
 
 export default StoreItem

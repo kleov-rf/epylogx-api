@@ -42,30 +42,36 @@ const adminsGet = async (req: Request, res: Response) => {
     name = '',
     isSub = undefined,
     userManage,
+    podcastManage,
     adminManage,
     postManage,
     categoryManage,
     storeManage,
+    storeOrdersManage,
   } = <any>req.query
 
   const roles = {}
 
-  switch ('true') {
-    case userManage:
-      Object.assign(roles, { 'roles.userManage': true })
-      break
-    case adminManage:
-      Object.assign(roles, { 'roles.adminManage': true })
-      break
-    case postManage:
-      Object.assign(roles, { 'roles.postManage': true })
-      break
-    case categoryManage:
-      Object.assign(roles, { 'roles.categoryManage': true })
-      break
-    case storeManage:
-      Object.assign(roles, { 'roles.storeManage': true })
-      break
+  if (userManage === 'true') {
+    Object.assign(roles, { 'roles.userManage': true })
+  }
+  if (adminManage === 'true') {
+    Object.assign(roles, { 'roles.adminManage': true })
+  }
+  if (postManage === 'true') {
+    Object.assign(roles, { 'roles.postManage': true })
+  }
+  if (categoryManage === 'true') {
+    Object.assign(roles, { 'roles.categoryManage': true })
+  }
+  if (storeManage === 'true') {
+    Object.assign(roles, { 'roles.storeManage': true })
+  }
+  if (podcastManage === 'true') {
+    Object.assign(roles, { 'roles.podcastManage': true })
+  }
+  if (storeOrdersManage === 'true') {
+    Object.assign(roles, { 'roles.podcastManage': true })
   }
 
   let isSubordinate

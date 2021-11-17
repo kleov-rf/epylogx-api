@@ -21,6 +21,8 @@ class epyServer {
     posts: string
     store: string
     users: string
+    uploadFiles: string
+    resetPassword: string
   }
 
   constructor() {
@@ -44,6 +46,8 @@ class epyServer {
       posts: '/api/posts',
       store: '/api/store',
       users: '/api/users',
+      uploadFiles: '/api/upload-files',
+      resetPassword: '/api/reset-password',
     }
 
     // Connect to database
@@ -87,6 +91,14 @@ class epyServer {
     this.app.use(this.paths.posts, require('../routes/posts').default)
     this.app.use(this.paths.store, require('../routes/store').default)
     this.app.use(this.paths.users, require('../routes/users').default)
+    this.app.use(
+      this.paths.uploadFiles,
+      require('../routes/upload-files').default
+    )
+    this.app.use(
+      this.paths.resetPassword,
+      require('../routes/reset-password').default
+    )
   }
 
   sockets() {}

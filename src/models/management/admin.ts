@@ -30,8 +30,15 @@ const AdminSchema = new Schema<adminInterface>({
       type: Boolean,
       default: false,
     },
+    podcastManage: {
+      type: Boolean,
+      default: false,
+    },
+    storeOrdersManage: {
+      type: Boolean,
+      default: false,
+    },
   },
-  pictureURL: String,
   superAdmin: {
     type: Schema.Types.ObjectId,
     ref: 'Admin',

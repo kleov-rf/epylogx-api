@@ -38,7 +38,6 @@ const assignUserStatics = (userSchema: Schema) => {
       Object.assign(query, { fullName: name })
     }
 
-    console.log(query)
     const user = await this.findOne(query)
 
     if (!user) {

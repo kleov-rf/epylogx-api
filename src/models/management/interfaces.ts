@@ -10,6 +10,8 @@ interface adminInterface extends metaUserInterface {
     postManage?: boolean
     categoryManage?: boolean
     storeManage?: boolean
+    podcastManage?: boolean
+    storeOrdersManage?: boolean
   }
   superAdmin: Schema.Types.ObjectId
 }

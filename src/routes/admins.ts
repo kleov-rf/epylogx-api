@@ -59,6 +59,18 @@ router.get(
     )
       .optional()
       .isBoolean(),
+    check(
+      'podcastManage',
+      'podcastManage query param must be a valid boolean interpretation'
+    )
+      .optional()
+      .isBoolean(),
+    check(
+      'storeOrdersManage',
+      'storeOrdersManage query param must be a valid boolean interpretation'
+    )
+      .optional()
+      .isBoolean(),
     validateFields,
   ],
   adminsGet

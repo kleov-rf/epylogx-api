@@ -23,6 +23,7 @@ const PostSchema = new Schema<postInterface>(
     uploadDate: Date,
     releaseDate: Date,
     fileURL: String,
+    previewImgURL: String,
   },
   {
     toJSON: { virtuals: true },

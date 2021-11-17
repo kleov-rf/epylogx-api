@@ -3,12 +3,15 @@ import { DescriptableInterface } from '../interfaces'
 
 interface storeItemInterface extends DescriptableInterface {
   price?: number
+  stock?: number
   belowPrice?: number
   abovePrice?: number
+  hasStock?: number
 }
 
 interface StoreItemModel extends Model<storeItemInterface> {
   getStoreItems(data: storeItemInterface): any
+  getStoreItem(data: { id: string }): any
 }
 
 interface storeOrderItemInterface {
@@ -39,6 +42,15 @@ interface storeOrderDataQuery extends storeOrderInterface {
   afterDate: Date
 }
 
+interface userStoreOrderInterface {
+  order?: string
+  purchaser?: string
+}
+
+interface UserStoreOrderModel extends Model<userStoreOrderInterface> {
+  getUserStoreOrders(data: userStoreOrderInterface): any
+}
+
 export {
   storeItemInterface,
   storeOrderInterface,
@@ -47,4 +59,6 @@ export {
   StoreItemModel,
   StoreOrderItemModel,
   StoreOrderModel,
+  userStoreOrderInterface,
+  UserStoreOrderModel,
 }

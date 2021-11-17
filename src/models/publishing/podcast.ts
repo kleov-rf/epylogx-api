@@ -23,16 +23,28 @@ PodcastSchema.virtual('owners', {
   foreignField: 'podcast',
 })
 
+PodcastSchema.statics.getPodcast = async function ({ id }) {
+  const query = {}
+
+  if (id && validator.isMongoId(id)) {
+    Object.assign(query, { _id: id })
+  }
+
+  const podcast = await this.findOne(query)
+
+  if (!podcast) {
+    throw new Error(`Couldn't find any podcast results with data: ${query}`)
+  }
+
+  return podcast
+}
+
 PodcastSchema.statics.getPodcasts = async function ({
-  _id,
   podcastId,
   title,
 }: podcastDataQuery) {
   const query = {}
 
-  if (_id && validator.isMongoId(_id)) {
-    Object.assign(query, { _id })
-  }
   if (podcastId && validator.isAlphanumeric(podcastId)) {
     const podcastIdRegex = new RegExp(podcastId)
     Object.assign(query, { podcastId: podcastIdRegex })

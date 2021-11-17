@@ -6,6 +6,7 @@ import {
   Podcast,
   Post,
   PostCategory,
+  Isced,
 } from './publishing'
 import { Article, Audio, Picture, Video } from './publishing/post_types'
 import {
@@ -16,7 +17,7 @@ import {
   UserPodcast,
   UserSavedPost,
 } from './social'
-import { StoreItem, StoreOrder, StoreOrderItem } from './store'
+import { StoreItem, StoreOrder, StoreOrderItem, UserStoreOrder } from './store'
 import { Server } from './server'
 
 export {
@@ -42,5 +43,7 @@ export {
   UserLikedPost,
   UserPodcast,
   UserSavedPost,
+  UserStoreOrder,
   Video,
+  Isced,
 }

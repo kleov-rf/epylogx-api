@@ -19,6 +19,10 @@ const DescriptableSchema = new Schema<DescriptableInterface>({
     },
     description: { type: String, default: '' },
   },
+  pictureURL: {
+    type: String,
+    default: '',
+  },
   isActive: {
     type: Boolean,
     default: true,

@@ -19,8 +19,21 @@ iscedSchema.statics.getISCED = async function (level: number) {
   return isced
 }
 
-iscedSchema.statics.getISCEDS = async function () {
-  const isceds = await this.find()
+iscedSchema.statics.getISCEDS = async function ({
+  aboveLevel = -1,
+  belowLevel = 9,
+}) {
+  const query = {}
+
+  if (aboveLevel) {
+    Object.assign(query, { level: { $gt: aboveLevel } })
+  }
+
+  if (belowLevel) {
+    Object.assign(query, { level: { $lt: belowLevel } })
+  }
+  console.log('ahora', query)
+  const isceds = await this.find(query)
   return isceds
 }
 

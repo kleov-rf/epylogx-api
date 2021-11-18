@@ -9,14 +9,15 @@ import {
 
 const storeOrderSchema = new Schema<storeOrderInterface>(
   {
-    _id: {
+    purchaser: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
     ticket: {
       type: [
         {
-          item: Schema.Types.ObjectId,
+          item: { type: Schema.Types.ObjectId, ref: 'StoreItem' },
           units: Number,
         },
       ],
@@ -47,8 +48,19 @@ const storeOrderSchema = new Schema<storeOrderInterface>(
   }
 )
 
+storeOrderSchema.statics.getStoreOrder = async function ({ id }) {
+  const query = {}
+
+  if (id && validator.isMongoId(id)) {
+    Object.assign(query, { _id: id })
+  }
+
+  const storeOrder = await this.findOne(query)
+
+  return storeOrder
+}
+
 storeOrderSchema.statics.getStoreOrders = async function ({
-  _id,
   hasItem,
   method,
   purchasedDate,
@@ -58,9 +70,6 @@ storeOrderSchema.statics.getStoreOrders = async function ({
 }: storeOrderDataQuery) {
   const query = {}
 
-  if (_id && validator.isMongoId(_id)) {
-    Object.assign(query, { _id })
-  }
   if (hasItem && validator.isMongoId(hasItem)) {
     Object.assign(query, { ticket: { item: hasItem } })
   }
@@ -84,7 +93,7 @@ storeOrderSchema.statics.getStoreOrders = async function ({
     Object.assign(query, { state })
   }
 
-  const storeOrders = this.find(query)
+  const storeOrders = await this.find(query)
 
   if (!storeOrders) {
     throw new Error(`Couldn't find any storeOrders results with data: ${query}`)

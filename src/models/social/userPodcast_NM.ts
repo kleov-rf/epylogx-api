@@ -7,10 +7,12 @@ const UserPodcastSchema = new Schema<userPodcastInterface>(
     owner: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User'
     },
     podcast: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Podcast'
     },
   },
   {
@@ -33,7 +35,7 @@ UserPodcastSchema.statics.getUsersPodcasts = async function ({
     Object.assign(query, { podcast })
   }
 
-  const usersPodcast = this.find(query)
+  const usersPodcast = await this.find(query)
 
   if (!usersPodcast) {
     throw new Error(

@@ -3,6 +3,15 @@ import { Request, Response } from 'express'
 import { Admin, Category, Podcast, Post, StoreItem, User } from '../models'
 cloudinary.config(<any>process.env.CLOUDINARY_URL)
 
+const defaultPhotos = {
+  podcast: 'defaultPodcast_vbwjee',
+  storeItem: 'defaultStoreItem_vs07iy',
+  category: 'defaultCategory_wn36xr',
+  postPreview: 'defaultPost_yjpolu',
+  admin: 'defaultAdmin_u4a3i2',
+  userProfile: 'defaultUser_dofhfg',
+}
+
 const updateAdminPhoto = async (req: Request, res: Response) => {
   const { id } = req.params
   const { tempFilePath } = (<any>req.files).profile
@@ -14,7 +23,8 @@ const updateAdminPhoto = async (req: Request, res: Response) => {
     const nombreExt = nombreArray[nombreArray.length - 1]
     const [public_id] = nombreExt.split('.')
 
-    cloudinary.uploader.destroy(public_id)
+    if (!Object.values(defaultPhotos).includes(public_id))
+      cloudinary.uploader.destroy(public_id)
   }
 
   try {
@@ -42,7 +52,8 @@ const updateCategoryPhoto = async (req: Request, res: Response) => {
     const nombreExt = nombreArray[nombreArray.length - 1]
     const [public_id] = nombreExt.split('.')
 
-    cloudinary.uploader.destroy(public_id)
+    if (!Object.values(defaultPhotos).includes(public_id))
+      cloudinary.uploader.destroy(public_id)
   }
 
   try {
@@ -70,7 +81,8 @@ const updatePodcastPhoto = async (req: Request, res: Response) => {
     const nombreExt = nombreArray[nombreArray.length - 1]
     const [public_id] = nombreExt.split('.')
 
-    cloudinary.uploader.destroy(public_id)
+    if (!Object.values(defaultPhotos).includes(public_id))
+      cloudinary.uploader.destroy(public_id)
   }
 
   try {
@@ -99,7 +111,8 @@ const updatePostFiles = async (req: Request, res: Response) => {
     const [public_id] = nombreExt.split('.')
 
     // TODO: get file and preview from file if not sent
-    cloudinary.uploader.destroy(public_id)
+    if (!Object.values(defaultPhotos).includes(public_id))
+      cloudinary.uploader.destroy(public_id)
   }
 
   if (preview && post.previewImgURL) {
@@ -107,7 +120,8 @@ const updatePostFiles = async (req: Request, res: Response) => {
     const nombreExt = nombreArray[nombreArray.length - 1]
     const [public_id] = nombreExt.split('.')
 
-    cloudinary.uploader.destroy(public_id)
+    if (!Object.values(defaultPhotos).includes(public_id))
+      cloudinary.uploader.destroy(public_id)
   }
 
   try {
@@ -119,6 +133,17 @@ const updatePostFiles = async (req: Request, res: Response) => {
     if (preview) {
       const { secure_url } = await cloudinary.uploader.upload(file.tempFilePath)
       post.previewImgURL = secure_url
+    }
+
+    if (file && !preview) {
+      const fileURLwithoutPage = post.fileURL.split('upload/')
+      const fileURLPaged = fileURLwithoutPage.join('upload/pg_1/')
+      const fileURLPagedWithoutExtension = fileURLPaged.split('.').slice(0, 3)
+      const fileURLPagedPng = fileURLPagedWithoutExtension
+        .concat('png')
+        .join('.')
+
+      post.previewImgURL = fileURLPagedPng
     }
 
     await post.save()
@@ -141,7 +166,8 @@ const updateStoreItemPhoto = async (req: Request, res: Response) => {
     const nombreExt = nombreArray[nombreArray.length - 1]
     const [public_id] = nombreExt.split('.')
 
-    cloudinary.uploader.destroy(public_id)
+    if (!Object.values(defaultPhotos).includes(public_id))
+      cloudinary.uploader.destroy(public_id)
   }
 
   try {
@@ -169,7 +195,8 @@ const updateUserPhotos = async (req: Request, res: Response) => {
     const nombreExt = nombreArray[nombreArray.length - 1]
     const [public_id] = nombreExt.split('.')
 
-    cloudinary.uploader.destroy(public_id)
+    if (!Object.values(defaultPhotos).includes(public_id))
+      cloudinary.uploader.destroy(public_id)
   }
 
   if (background && user.customization.bgPictureURL) {
@@ -177,7 +204,8 @@ const updateUserPhotos = async (req: Request, res: Response) => {
     const nombreExt = nombreArray[nombreArray.length - 1]
     const [public_id] = nombreExt.split('.')
 
-    cloudinary.uploader.destroy(public_id)
+    if (!Object.values(defaultPhotos).includes(public_id))
+      cloudinary.uploader.destroy(public_id)
   }
 
   try {

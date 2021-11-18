@@ -13,6 +13,10 @@ const StoreItemSchema = new Schema<storeItemInterface>(
       type: Number,
       default: 0,
     },
+    pictureURL: {
+      type: String,
+      default: 'https://res.cloudinary.com/epylog/image/upload/v1637203709/defaultStoreItem_vs07iy.png'
+    }
   },
   {
     toJSON: { virtuals: true },
@@ -68,7 +72,7 @@ StoreItemSchema.statics.getStoreItems = async function ({
     Object.assign(query, { stock: { $eq: 0 } })
   }
 
-  const storeItems = this.find(query)
+  const storeItems = await this.find(query)
 
   if (!storeItems) {
     throw new Error(`Couldn't find any storeItems results with data: ${query}`)

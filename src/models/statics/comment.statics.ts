@@ -31,7 +31,7 @@ const assignCommentStatics = (commentSchema: Schema) => {
       Object.assign(query, { isHidden })
     }
 
-    const comments = this.find(query)
+    const comments = await this.find(query)
 
     if (!comments) {
       throw new Error(`Couldn't find any comments results with data: ${query}`)

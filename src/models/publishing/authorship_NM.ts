@@ -7,10 +7,12 @@ const AuthorshipSchema = new Schema<authorshipInterface>(
     author: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
     post: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Post',
     },
   },
   {
@@ -32,7 +34,7 @@ AuthorshipSchema.statics.getAuthorships = async function ({
     Object.assign(query, { post })
   }
 
-  const authorship = this.find(query)
+  const authorship = await this.find(query)
 
   if (!authorship) {
     throw new Error(`Couldn't find any authorship results with data: ${query}`)

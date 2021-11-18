@@ -77,9 +77,21 @@ const categoriesPost = async (req: Request, res: Response) => {
 
 const categoriesPut = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { ...categoriesPayload } = req.body
+  const { title, description, ...categoriesPayload } = req.body
 
-  const newCategory = await Category.findByIdAndUpdate(id, categoriesPayload, {
+  const data = {}
+
+  if (title) {
+    Object.assign(data, { 'info.title': title })
+  }
+  if (description) {
+    Object.assign(data, { 'info.description': description })
+  }
+
+  Object.assign(data, categoriesPayload)
+  console.log(data)
+
+  const newCategory = await Category.findByIdAndUpdate(id, data, {
     new: true,
   })
 

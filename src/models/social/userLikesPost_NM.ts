@@ -7,10 +7,12 @@ const UserLikesPostSchema = new Schema<userLikesPost>(
     user: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User'
     },
     post: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Post'
     },
   },
   {
@@ -32,7 +34,7 @@ UserLikesPostSchema.statics.getUserLikedPosts = async function ({
     Object.assign(query, { post })
   }
 
-  const userLikedPosts = this.find(query)
+  const userLikedPosts = await this.find(query)
 
   if (!userLikedPosts) {
     throw new Error(

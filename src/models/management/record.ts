@@ -16,13 +16,31 @@ const RecordSchema = new Schema<manageRecordInterface>(
     by: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Admin',
     },
     to: {
       id: {
         type: Schema.Types.ObjectId,
         required: true,
+        refPath: 'idModel',
       },
-      type: String,
+      idModel: {
+        type: String,
+        required: true,
+        enum: [
+          'User',
+          'Admin',
+          'Post',
+          'StoreItem',
+          'StoreOrder',
+          'Category',
+          'Report',
+          'Comment',
+          'Isced',
+          'Podcast',
+        ],
+      },
+      type: { type: String, default: 'type' },
     },
     description: {
       type: String,
@@ -39,8 +57,19 @@ const RecordSchema = new Schema<manageRecordInterface>(
   }
 )
 
+RecordSchema.statics.getRecord = async function ({ id }) {
+  const query = {}
+
+  if (id && validator.isMongoId(id)) {
+    Object.assign(query, { _id: id })
+  }
+
+  const record = await this.findOne(query)
+
+  return record
+}
+
 RecordSchema.statics.getRecords = async function ({
-  _id,
   action,
   by,
   to,
@@ -50,9 +79,7 @@ RecordSchema.statics.getRecords = async function ({
   date,
 }: RecordDataQuery) {
   const query = {}
-  if (_id && validator.isMongoId(_id)) {
-    Object.assign(query, { _id })
-  }
+
   if (action && validator.isMongoId(action)) {
     Object.assign(query, { action })
   }
@@ -75,7 +102,7 @@ RecordSchema.statics.getRecords = async function ({
     Object.assign(query, { recordDate: minifiedISOString(date) })
   }
 
-  const records = this.find(query)
+  const records = await this.find(query)
 
   if (!records) {
     throw new Error(`Couldn't find any records results with data: ${query}`)

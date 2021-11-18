@@ -5,16 +5,23 @@ import { commentInterface, commentModel } from './interfaces'
 const CommentSchema = new Schema<commentInterface>(
   {
     author: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
-    post: Schema.Types.ObjectId,
+    post: {
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+    },
     text: {
       type: String,
       required: true,
     },
     likes: Number,
-    superComment: Schema.Types.ObjectId,
+    superComment: {
+      type: Schema.Types.ObjectId,
+      ref: 'Comment',
+    },
     isHidden: {
       type: Boolean,
       default: false,
@@ -28,6 +35,10 @@ const CommentSchema = new Schema<commentInterface>(
 
 assignCommentStatics(CommentSchema)
 
-const Comment = model<commentInterface, commentModel>('Comment', CommentSchema, 'comments')
+const Comment = model<commentInterface, commentModel>(
+  'Comment',
+  CommentSchema,
+  'comments'
+)
 
 export default Comment

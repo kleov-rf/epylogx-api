@@ -17,7 +17,7 @@ interface metaUserInterface extends DescriptableInterface {
 }
 
 interface AudiovisualInterface {
-  file_length: number
+  duration: number
   timestamps?: Array<{ time: number; title: string }>
   quality: string
 }

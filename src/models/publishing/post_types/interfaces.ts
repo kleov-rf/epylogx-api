@@ -26,6 +26,17 @@ interface videoInterface extends postInterface, AudiovisualInterface {
 
 interface videoInterfaceModel extends Model<videoInterface> {}
 
+interface postTypeInterface {
+  name: string
+  allowedExtensions: string[]
+  isActive: boolean
+}
+
+interface postTypeModel extends Model<postTypeInterface> {
+  getPostTypes(data: { isActive?: boolean }): any
+  getPostType(data: { id: string }): any
+}
+
 export {
   articleInterface,
   pictureInterface,
@@ -35,4 +46,6 @@ export {
   pictureInterfaceModel,
   audioInterfaceModel,
   videoInterfaceModel,
+  postTypeInterface,
+  postTypeModel,
 }

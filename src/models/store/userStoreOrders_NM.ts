@@ -27,7 +27,7 @@ userStoreOrderSchema.statics.getUserOrders = async function ({
     Object.assign(query, { purchaser })
   }
 
-  const userOrders = this.find(query)
+  const userOrders = await this.find(query)
 
   if (!userOrders) {
     throw new Error(`Couldn't find any userOrders results with data: ${query}`)

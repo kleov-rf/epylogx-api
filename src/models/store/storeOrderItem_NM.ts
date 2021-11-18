@@ -7,10 +7,12 @@ const StoreOrderItemSchema = new Schema<storeOrderItemInterface>(
     storeOrder: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'StoreOrder',
     },
     storeItem: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'StoreItem',
     },
   },
   {
@@ -32,7 +34,7 @@ StoreOrderItemSchema.statics.getOrdersItems = async function ({
     Object.assign(query, { storeItem })
   }
 
-  const ordersItems = this.find(query)
+  const ordersItems = await this.find(query)
 
   if (!ordersItems) {
     throw new Error(`Couldn't find any orderItems results with data: ${query}`)

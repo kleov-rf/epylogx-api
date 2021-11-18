@@ -29,6 +29,8 @@ const hasRoles = ({
   storeManage = false,
   podcastManage = false,
   storeOrdersManage = false,
+  iscedManage = false,
+  postTypeManage = false,
 }) => {
   return (req: Request, res: Response, next: NextFunction) => {
     const {
@@ -52,6 +54,8 @@ const hasRoles = ({
       storeManage,
       podcastManage,
       storeOrdersManage,
+      iscedManage,
+      postTypeManage,
     }
 
     const requiredRoles = Object.keys(roles).filter(
@@ -88,6 +92,8 @@ const hasPostRoles = ({
   storeManage = false,
   podcastManage = false,
   storeOrdersManage = false,
+  iscedManage = false,
+  postTypeManage = false,
 }) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const {
@@ -113,6 +119,8 @@ const hasPostRoles = ({
       storeManage,
       podcastManage,
       storeOrdersManage,
+      iscedManage,
+      postTypeManage,
     }
 
     const requiredRoles = Object.keys(roles).filter(
@@ -149,6 +157,8 @@ const hasPodcastRules = ({
   storeManage = false,
   podcastManage = false,
   storeOrdersManage = false,
+  iscedManage = false,
+  postTypeManage = false,
 }) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const {
@@ -174,6 +184,8 @@ const hasPodcastRules = ({
       storeManage,
       podcastManage,
       storeOrdersManage,
+      iscedManage,
+      postTypeManage,
     }
 
     const requiredRoles = Object.keys(roles).filter(
@@ -210,6 +222,8 @@ const hasStoreOrderRoles = ({
   storeManage = false,
   podcastManage = false,
   storeOrdersManage = false,
+  iscedManage = false,
+  postTypeManage = false,
 }) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const {
@@ -235,6 +249,8 @@ const hasStoreOrderRoles = ({
       storeManage,
       podcastManage,
       storeOrdersManage,
+      iscedManage,
+      postTypeManage,
     }
 
     const requiredRoles = Object.keys(roles).filter(

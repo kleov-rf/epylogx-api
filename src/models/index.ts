@@ -7,6 +7,7 @@ import {
   Post,
   PostCategory,
   Isced,
+  PostType,
 } from './publishing'
 import { Article, Audio, Picture, Video } from './publishing/post_types'
 import {
@@ -46,4 +47,5 @@ export {
   UserStoreOrder,
   Video,
   Isced,
+  PostType,
 }

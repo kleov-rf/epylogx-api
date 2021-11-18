@@ -1,13 +1,9 @@
 import { isValidObjectId, model, Schema } from 'mongoose'
 import validator from 'validator'
-import { reportInterface, ReportModel } from './interfaces'
+import { reportInterface, ReportModel, reportDataQuery } from './interfaces'
 
 const ReportSchema = new Schema<reportInterface>(
   {
-    _id: {
-      type: Schema.Types.ObjectId,
-      required: true,
-    },
     mainCause: {
       type: String,
       required: true,
@@ -17,12 +13,14 @@ const ReportSchema = new Schema<reportInterface>(
       default: '',
     },
     author: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
     post: {
-      type: String,
+      type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Post',
     },
     isResolved: {
       type: Boolean,
@@ -35,19 +33,27 @@ const ReportSchema = new Schema<reportInterface>(
   }
 )
 
+ReportSchema.statics.getReport = async function ({ id }) {
+  const query = {}
+
+  if (id && validator.isMongoId(id)) {
+    Object.assign(query, { _id: id })
+  }
+
+  const report = await this.findOne(query)
+
+  return report
+}
+
 ReportSchema.statics.getReports = async function ({
-  _id,
   mainCause,
   description,
   author,
   post,
   isResolved,
-}: reportInterface) {
+}: reportDataQuery) {
   const query = {}
 
-  if (_id && validator.isMongoId(_id)) {
-    Object.assign(query, { _id })
-  }
   if (mainCause && validator.isMongoId(mainCause)) {
     Object.assign(query, { mainCause })
   }
@@ -68,7 +74,7 @@ ReportSchema.statics.getReports = async function ({
     Object.assign(query, { isResolved })
   }
 
-  const reports = this.find(query)
+  const reports = await this.find(query)
 
   if (!reports) {
     throw new Error(`Couldn't find any reports results with data: ${query}`)

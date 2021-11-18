@@ -7,10 +7,12 @@ const PostCategorySchema = new Schema<postCategoryInterface>(
     post: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Post',
     },
     category: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Category',
     },
   },
   {
@@ -32,7 +34,7 @@ PostCategorySchema.statics.getPostsCategories = async function ({
     Object.assign(query, { category })
   }
 
-  const postsCategories = this.find(query)
+  const postsCategories = await this.find(query)
 
   if (!postsCategories) {
     throw new Error(

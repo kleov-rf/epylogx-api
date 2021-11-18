@@ -10,6 +10,10 @@ const iscedSchema = new Schema<iscedInterface>({
     type: String,
     required: true,
   },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 iscedSchema.index({ level: 1 })
@@ -20,10 +24,17 @@ iscedSchema.statics.getISCED = async function (level: number) {
 }
 
 iscedSchema.statics.getISCEDS = async function ({
-  aboveLevel = -1,
-  belowLevel = 9,
+  aboveLevel,
+  belowLevel,
+  isActive,
 }) {
   const query = {}
+
+  if (aboveLevel && belowLevel) {
+    Object.assign(query, {
+      $and: [{ level: { $gt: aboveLevel } }, { level: { $lt: belowLevel } }],
+    })
+  }
 
   if (aboveLevel) {
     Object.assign(query, { level: { $gt: aboveLevel } })
@@ -32,7 +43,11 @@ iscedSchema.statics.getISCEDS = async function ({
   if (belowLevel) {
     Object.assign(query, { level: { $lt: belowLevel } })
   }
-  console.log('ahora', query)
+
+  if (isActive != undefined) {
+    Object.assign(query, { isActive })
+  }
+
   const isceds = await this.find(query)
   return isceds
 }

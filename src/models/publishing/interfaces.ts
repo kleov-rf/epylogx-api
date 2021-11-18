@@ -29,25 +29,28 @@ interface CategoryModel extends Model<CategoryInterface> {
 interface iscedInterface {
   level: number
   description: string
+  isActive: boolean
 }
 
 interface iscedModel extends Model<iscedInterface> {
   getISCEDS({
     aboveLevel,
     belowLevel,
+    isActive,
   }: {
     aboveLevel?: number
     belowLevel?: number
+    isActive?: string
   }): any
   getISCED(level: number): any
 }
 
 interface commentInterface {
-  author: string /* User.id */
-  post: string
+  author: Schema.Types.ObjectId /* User.id */
+  post: Schema.Types.ObjectId
   text: string
   likes?: number
-  superComment?: string /* Comment */
+  superComment?: Schema.Types.ObjectId /* Comment */
   isHidden?: boolean
 }
 
@@ -97,6 +100,7 @@ interface postInterface extends DescriptableInterface {
       required: true
     }
   }
+  isApproved: boolean
 }
 
 interface postModel extends Model<postInterface> {

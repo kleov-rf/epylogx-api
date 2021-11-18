@@ -12,6 +12,8 @@ interface adminDataQuery {
     storeManage?: boolean
     podcastManage?: boolean
     storeOrdersManage?: boolean
+    iscedManage?: boolean
+    postTypeManage?: boolean
   }
   subordinateOf?: string
 }
@@ -53,6 +55,8 @@ interface postDataQuery {
     longitude: Number
     maxRadius?: Number
   }
+  isActive?: boolean
+  isApproved?: boolean
 }
 
 interface usersDataQuery {

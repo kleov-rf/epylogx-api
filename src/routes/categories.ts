@@ -7,6 +7,7 @@ import {
   categoriesPut,
   categoryBranchesGet,
   categoryGet,
+  categoryPostsGet,
 } from '../controllers/categories'
 import {
   existsCategoryByObjectId,
@@ -58,7 +59,7 @@ router.get(
     check('id').custom(existsCategoryByObjectId),
     validateFields,
   ],
-  categoriesGet
+  categoryPostsGet
 )
 
 router.post(
@@ -87,6 +88,10 @@ router.post(
     ).isMongoId(),
     check('isced').custom(existsISCEDByObjectId),
     check('description', 'category description is required').notEmpty(),
+    check(
+      'description',
+      'Category description must be at least 5 characters long.'
+    ).isLength({ min: 5 }),
     validateFields,
   ],
   categoriesPost
@@ -115,6 +120,12 @@ router.put(
       .optional()
       .isMongoId(),
     check('isced').optional().custom(existsISCEDByObjectId),
+    check(
+      'description',
+      'Category description must be at least 5 characters long.'
+    )
+      .optional()
+      .isLength({ min: 5 }),
     validateFields,
   ],
   categoriesPut

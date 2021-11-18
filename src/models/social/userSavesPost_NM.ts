@@ -4,8 +4,8 @@ import { userSavesPostInterface, UserSavesPostModel } from './interfaces'
 
 const UserSavesPostSchema = new Schema<userSavesPostInterface>(
   {
-    user: { type: Schema.Types.ObjectId, required: true },
-    post: { type: Schema.Types.ObjectId, required: true },
+    user: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    post: { type: Schema.Types.ObjectId, required: true, ref: 'Post' },
   },
   {
     toJSON: { virtuals: true },
@@ -27,7 +27,7 @@ UserSavesPostSchema.statics.getUsersSavedPosts = async function ({
     Object.assign(query, { post })
   }
 
-  const userSavedPosts = this.find(query)
+  const userSavedPosts = await this.find(query)
 
   if (!userSavedPosts) {
     throw new Error(

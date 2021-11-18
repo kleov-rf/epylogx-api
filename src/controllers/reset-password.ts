@@ -1,5 +1,5 @@
+import sgMail from '@sendgrid/mail'
 import { Request, Response } from 'express'
-import nodemailer, { Transporter, SendMailOptions } from 'nodemailer'
 import { Admin, User } from '../models'
 
 const postResetPassword = async (req: Request, res: Response) => {
@@ -12,40 +12,23 @@ const postResetPassword = async (req: Request, res: Response) => {
 
   const metaUser = user ?? admin
 
-  const transporter: Transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_ACCOUNT,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-    // tls: { servername: 'smtp.gmail.com' },
-  })
-
-  const mailOptions: SendMailOptions = {
-    from: 'Forgot password uwu, epylogx@gmail.com',
+  const mailOptions = {
+    from: 'epylogx@gmail.com',
     to: email,
-    subject: `Reset your Epylogx Password, ${metaUser?.givenName}`,
+    subject: `Reset your epylogx password, ${metaUser?.givenName}`,
+    text: 'Monda',
     html: `
-      <h2>Email enviado desde node.js</h2>
-      <h4>Please click on th efollowing link, or paste this into your browser to compolete the process:</h4>
+      <h2>Hi! It seems that you've forgotten your epylogx password, let us help you</h2>
+      <h4>Please click on the following link, this will send you to a page for reset your password :)</h4>
       <a href="http://www.google.com">Recover your password</a> 
-    `
+    `,
   }
+  sgMail.setApiKey(<any>process.env.SENDGRID_API_KEY)
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      res.status(500).json({
-        errors: true,
-        reason: error,
-      })
-    } else {
-      res.json({
-        info: `Email sent: ${info.response}`,
-      })
-    }
-  })
+  sgMail
+    .send(mailOptions)
+    .then(data => res.json({ data }))
+    .catch(error => console.error(error))
 }
 
 export default postResetPassword

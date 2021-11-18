@@ -71,20 +71,24 @@ router.get(
     )
       .optional()
       .isBoolean(),
+    check(
+      'iscedManage',
+      'iscedManage query param must be a valid boolean interpretation'
+    )
+      .optional()
+      .isBoolean(),
+    check(
+      'postTypeManage',
+      'postTypeManage query param must be a valid boolean interpretation'
+    )
+      .optional()
+      .isBoolean(),
     validateFields,
   ],
   adminsGet
 )
 
-router.get(
-  '/:id',
-  [
-    validateJWT,
-    isMetaUserAdmin,
-    validateFields,
-  ],
-  adminGet
-)
+router.get('/:id', [validateJWT, isMetaUserAdmin, validateFields], adminGet)
 router.get(
   '/:id/subAdmins',
   [validateJWT, isMetaUserAdmin, validateFields],

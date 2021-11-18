@@ -7,10 +7,12 @@ const UserInterestSchema = new Schema<userInterestsInterface>(
     interested: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User'
     },
     category: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Category'
     },
   },
   {
@@ -32,7 +34,7 @@ UserInterestSchema.statics.getUserInterests = async function ({
     Object.assign(query, { category })
   }
 
-  const userInterests = this.find(query)
+  const userInterests = await this.find(query)
 
   if (!userInterests) {
     throw new Error(

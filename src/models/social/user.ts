@@ -35,7 +35,15 @@ const UserSchema = new Schema<userInterface>(
     customization: {
       themeColor: String,
       bgPictureURL: String,
-      pictureColor: String,
+      pictureColor: {
+        type: String,
+        default: '#2D3047'
+      },
+    },
+    pictureURL: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/epylog/image/upload/v1637202809/defaultUser_dofhfg.png',
     },
   },
   {

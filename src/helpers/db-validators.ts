@@ -1,10 +1,12 @@
 import {
-  Admin, Category,
+  Admin,
+  Category,
   Isced,
   Podcast,
   Post,
+  PostType,
   StoreItem,
-  User
+  User,
 } from '../models'
 
 const existsUserByObjectId = async (_id: string) => {
@@ -94,6 +96,22 @@ const existsStoreItemByObjectId = async (id: string) => {
   }
 }
 
+const existsPostTypeByObjectId = async (id: string) => {
+  const postType = await PostType.findById(id)
+  if (!postType) {
+    throw new Error(`PostType with id ${id} wasn't found`)
+  }
+}
+
+const existsPostTypeByName = async (name: string) => {
+  const postType = await PostType.findOne({ name })
+  if (postType) {
+    throw new Error(
+      `PostType with name ${name} already exists, try another name`
+    )
+  }
+}
+
 export {
   existsUserByObjectId,
   existsAdminByObjectId,
@@ -106,5 +124,6 @@ export {
   existsPodcastByObjectId,
   existsPostByObjectId,
   existsStoreItemByObjectId,
+  existsPostTypeByObjectId,
+  existsPostTypeByName,
 }
-

@@ -13,7 +13,11 @@ const CategorySchema = new Schema<CategoryInterface>(
       type: Schema.Types.ObjectId,
       ref: 'Category',
     },
-    stats: {},
+    pictureURL: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/epylog/image/upload/v1637203709/defaultCategory_wn36xr.png',
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -28,6 +32,10 @@ CategorySchema.index({
   superCategory: -1,
 })
 
-const Category = model<CategoryInterface, CategoryModel>('Category', CategorySchema, 'categories')
+const Category = model<CategoryInterface, CategoryModel>(
+  'Category',
+  CategorySchema,
+  'categories'
+)
 
 export default Category

@@ -13,7 +13,8 @@ router.post(
     check('email', 'email value must be a valid email').isEmail({
       domain_specific_validation: true,
     }),
-    // check('email').not().custom(existsEmail),
+    // TODO: Enviar enlace email con usuario embebido
+    check('email').not().custom(existsEmail),
     validateFields,
   ],
   postResetPassword

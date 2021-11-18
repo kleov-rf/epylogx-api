@@ -19,10 +19,6 @@ const DescriptableSchema = new Schema<DescriptableInterface>({
     },
     description: { type: String, default: '' },
   },
-  pictureURL: {
-    type: String,
-    default: '',
-  },
   isActive: {
     type: Boolean,
     default: true,
@@ -78,7 +74,7 @@ metaUserSchema.virtual('fullName').get(function (this: metaUserInterface) {
 // Post definitions.
 
 const AudioVisualSchema = new Schema<AudiovisualInterface>({
-  file_length: Number,
+  duration: Number,
   timestamps: [{ time: Number, title: String }],
   quality: String,
 })

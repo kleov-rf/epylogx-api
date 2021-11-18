@@ -38,10 +38,23 @@ const AdminSchema = new Schema<adminInterface>({
       type: Boolean,
       default: false,
     },
+    iscedManage: {
+      type: Boolean,
+      default: false,
+    },
+    postTypeManage: {
+      type: Boolean,
+      default: false,
+    },
   },
   superAdmin: {
     type: Schema.Types.ObjectId,
     ref: 'Admin',
+  },
+  pictureURL: {
+    type: String,
+    default:
+      'https://res.cloudinary.com/epylog/image/upload/v1637202959/defaultAdmin_u4a3i2.png',
   },
   // Before closing our Schema we add our main class: metaUser
 }).add(metaUserSchema)

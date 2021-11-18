@@ -48,6 +48,8 @@ const adminsGet = async (req: Request, res: Response) => {
     categoryManage,
     storeManage,
     storeOrdersManage,
+    iscedManage,
+    postTypeManage
   } = <any>req.query
 
   const roles = {}
@@ -71,7 +73,13 @@ const adminsGet = async (req: Request, res: Response) => {
     Object.assign(roles, { 'roles.podcastManage': true })
   }
   if (storeOrdersManage === 'true') {
-    Object.assign(roles, { 'roles.podcastManage': true })
+    Object.assign(roles, { 'roles.storeOrdersManage': true })
+  }
+  if (iscedManage === 'true') {
+    Object.assign(roles, { 'roles.iscedManage': true })
+  }
+  if (postTypeManage === 'true') {
+    Object.assign(roles, { 'roles.postTypeManage': true })
   }
 
   let isSubordinate

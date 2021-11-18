@@ -8,6 +8,7 @@ const AudioSchema = new Schema<audioInterface>(
     podcast: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'Podcast'
     },
   },
   {

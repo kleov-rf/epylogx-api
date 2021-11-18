@@ -27,6 +27,8 @@ const assignPostStatics = (postSchema: Schema) => {
     sinceRelease,
     beforeRelease,
     coords,
+    isActive,
+    isApproved,
   }: postDataQuery) {
     const types = ['article', 'picture', 'audio', 'video']
     const query = {}
@@ -72,6 +74,13 @@ const assignPostStatics = (postSchema: Schema) => {
           },
         },
       })
+    }
+
+    if (isActive != undefined) {
+      Object.assign(query, { isActive })
+    }
+    if (isApproved != undefined) {
+      Object.assign(query, { isApproved })
     }
 
     const posts = await this.find(query)

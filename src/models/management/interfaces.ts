@@ -12,6 +12,8 @@ interface adminInterface extends metaUserInterface {
     storeManage?: boolean
     podcastManage?: boolean
     storeOrdersManage?: boolean
+    iscedManage?: boolean
+    postTypeManage?: boolean
   }
   superAdmin: Schema.Types.ObjectId
 }
@@ -37,7 +39,6 @@ interface RecordModel extends Model<manageRecordInterface> {
 }
 
 interface RecordDataQuery {
-  _id: string
   action: string
   by: string
   to: string
@@ -48,16 +49,23 @@ interface RecordDataQuery {
 }
 
 interface reportInterface {
-  _id?: string
   mainCause: string
   description: string
-  author: string /* User */
-  post: string /* Post */
+  author: Schema.Types.ObjectId /* User */
+  post: Schema.Types.ObjectId /* Post */
+  isResolved?: boolean
+}
+
+interface reportDataQuery {
+  mainCause?: string
+  description?: string
+  author?: string /* User */
+  post?: string /* Post */
   isResolved?: boolean
 }
 
 interface ReportModel extends Model<reportInterface> {
-  getReports(data: reportInterface): any
+  getReports(data: reportDataQuery): any
 }
 
 export {
@@ -68,4 +76,5 @@ export {
   AdminModel,
   RecordModel,
   ReportModel,
+  reportDataQuery,
 }

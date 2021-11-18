@@ -10,6 +10,11 @@ const PodcastSchema = new Schema<podcastInterface>(
       required: true,
       unique: true,
     },
+    pictureURL: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/epylog/image/upload/v1637203709/defaultPodcast_vbwjee.png',
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -54,7 +59,7 @@ PodcastSchema.statics.getPodcasts = async function ({
     Object.assign(query, { 'info.title': titleRegex })
   }
 
-  const podcasts = this.find(query)
+  const podcasts = await this.find(query)
 
   if (!podcasts) {
     throw new Error(`Couldn't find any podcasts results with data: ${query}`)

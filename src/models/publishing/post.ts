@@ -8,7 +8,7 @@ const PostSchema = new Schema<postInterface>(
   {
     type: {
       type: Schema.Types.ObjectId,
-      ref: 'PostTypes',
+      ref: 'PostType',
     },
     social: {
       commentsEnabled: {
@@ -23,7 +23,15 @@ const PostSchema = new Schema<postInterface>(
     uploadDate: Date,
     releaseDate: Date,
     fileURL: String,
-    previewImgURL: String,
+    previewImgURL: {
+      type: String,
+      default:
+        'https://res.cloudinary.com/epylog/image/upload/v1637203709/defaultPost_yjpolu.png',
+    },
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },

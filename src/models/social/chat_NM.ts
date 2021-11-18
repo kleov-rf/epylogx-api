@@ -7,6 +7,7 @@ const ChatSchema = new Schema<chatEntryInterface>(
     transmitter: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User'
     },
     text: {
       type: String,
@@ -15,6 +16,7 @@ const ChatSchema = new Schema<chatEntryInterface>(
     receiver: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User'
     },
     sentDate: Date,
     isLiked: {

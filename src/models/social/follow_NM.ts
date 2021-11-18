@@ -7,12 +7,14 @@ const FollowSchema = new Schema<followInterface>(
     follower: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
     followed: {
       type: Schema.Types.ObjectId,
       required: true,
+      ref: 'User',
     },
-    notify: Boolean
+    notify: Boolean,
   },
   {
     toJSON: { virtuals: true },
@@ -37,7 +39,7 @@ FollowSchema.statics.getFollows = async function ({
     Object.assign(query, { notify })
   }
 
-  const follows = this.find(query)
+  const follows = await this.find(query)
 
   if (!follows) {
     throw new Error(`Couldn't find any follows results with data: ${query}`)

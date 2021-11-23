@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { Authorship, UserPodcast, UserStoreOrder } from '../models'
+import { Authorship, StoreOrder, UserPodcast } from '../models'
 
 const isMetaUserAdmin = (req: Request, res: Response, next: NextFunction) => {
   const { metaUser, isAdmin } = <any>req
@@ -232,7 +232,7 @@ const hasStoreOrderRoles = ({
       params: { id },
     } = <any>req
 
-    const purchaser = await UserStoreOrder.getUserStoreOrders({ order: id })
+    const { purchaser } = await StoreOrder.getStoreOrder({ id })
 
     if (!isAdmin && !purchaser.includes(metaUser._id)) {
       return res.status(401).json({

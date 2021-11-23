@@ -18,7 +18,7 @@ import {
   UserPodcast,
   UserSavedPost,
 } from './social'
-import { StoreItem, StoreOrder, StoreOrderItem, UserStoreOrder } from './store'
+import { StoreItem, StoreOrder, StoreOrderItem } from './store'
 import { Server } from './server'
 
 export {
@@ -44,7 +44,6 @@ export {
   UserLikedPost,
   UserPodcast,
   UserSavedPost,
-  UserStoreOrder,
   Video,
   Isced,
   PostType,

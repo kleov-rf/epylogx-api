@@ -5,6 +5,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 
 import { dbConnection } from '../database/config'
+import socketController from '../sockets/controller'
 
 class epyServer {
   public app: express.Application
@@ -35,7 +36,12 @@ class epyServer {
     // Then we assign both our express and sockets servers in this.server
     // allowing them to stablish connections.
     this.server = createServer(this.app)
-    this.io = require('socket.io')(this.server)
+    this.io = require('socket.io')(this.server, {
+      cors: {
+        origin: 'http://localhost:3000',
+        methods: ['GET', 'POST'],
+      },
+    })
 
     // These are our api paths
     this.paths = {
@@ -62,6 +68,9 @@ class epyServer {
 
     // Routes
     this.routes()
+
+    // Sockets
+    this.sockets()
   }
 
   async connectToDB() {
@@ -107,7 +116,9 @@ class epyServer {
     this.app.use(this.paths.postTypes, require('../routes/post-types').default)
   }
 
-  sockets() {}
+  sockets() {
+    this.io.on('connection', socket => socketController(socket, this.io))
+  }
 
   listen() {
     // We run our express-socket server and print

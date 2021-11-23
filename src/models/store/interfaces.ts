@@ -36,22 +36,23 @@ interface storeOrderInterface {
 }
 
 interface StoreOrderModel extends Model<storeOrderInterface> {
+  getStoreOrder(data: { id: string }): any
   getStoreOrders(data: storeOrderDataQuery): any
 }
 
-interface storeOrderDataQuery extends storeOrderInterface {
+interface storeOrderDataQuery {
   hasItem?: string
   beforeDate?: Date
   afterDate?: Date
-}
-
-interface userStoreOrderInterface {
-  order?: string
   purchaser?: string
-}
-
-interface UserStoreOrderModel extends Model<userStoreOrderInterface> {
-  getUserStoreOrders(data: userStoreOrderInterface): any
+  ticket?: Array<{
+    item: string /* StoreItem.id */
+    units: number
+  }>
+  method?: string /* 'card' | 'cash' */
+  address?: string
+  purchasedDate?: Date
+  state?: string /* 'pendant' | 'confirmed' | 'shipped' */
 }
 
 export {
@@ -62,6 +63,4 @@ export {
   StoreItemModel,
   StoreOrderItemModel,
   StoreOrderModel,
-  userStoreOrderInterface,
-  UserStoreOrderModel,
 }

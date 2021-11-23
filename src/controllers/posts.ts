@@ -1,23 +1,32 @@
 import { Request, Response } from 'express'
+import { Post } from '../models'
 
-const postsGet = (req: Request, res: Response) => {
+const getPosts = async (req: Request, res: Response) => {
   const {} = req
   return res.json({})
 }
 
-const postsPost = (req: Request, res: Response) => {
+const getPost = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  const post = await Post.getPost({ id })
+
+  return res.json({})
+}
+
+const createPost = async (req: Request, res: Response) => {
   const {} = req
   return res.json({})
 }
 
-const postsPut = (req: Request, res: Response) => {
+const modifyPost = async (req: Request, res: Response) => {
   const {} = req
   return res.json({})
 }
 
-const postsDelete = (req: Request, res: Response) => {
+const deletePost = async (req: Request, res: Response) => {
   const {} = req
   return res.json({})
 }
 
-export { postsGet, postsPost, postsPut, postsDelete }
+export { getPost, getPosts, createPost, modifyPost, deletePost }

@@ -22,7 +22,7 @@ const generateJWT = (uid: string, isAdmin: boolean) => {
   })
 }
 
-const checkJWT = async (token: string) => {
+const checkJWT = async (token: any) => {
   try {
     if (token.length < 10) {
       return null

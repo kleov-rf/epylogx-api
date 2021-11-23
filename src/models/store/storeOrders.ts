@@ -55,12 +55,13 @@ storeOrderSchema.statics.getStoreOrder = async function ({ id }) {
     Object.assign(query, { _id: id })
   }
 
-  const storeOrder = await this.findOne(query)
+  const storeOrder = await this.findOne(query).populate('purchaser')
 
   return storeOrder
 }
 
 storeOrderSchema.statics.getStoreOrders = async function ({
+  purchaser,
   hasItem,
   method,
   purchasedDate,
@@ -70,6 +71,9 @@ storeOrderSchema.statics.getStoreOrders = async function ({
 }: storeOrderDataQuery) {
   const query = {}
 
+  if (purchaser && validator.isMongoId(purchaser)) {
+    Object.assign(query, { purchaser })
+  }
   if (hasItem && validator.isMongoId(hasItem)) {
     Object.assign(query, { ticket: { item: hasItem } })
   }

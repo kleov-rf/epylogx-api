@@ -51,10 +51,11 @@ router.post(
       'allowedExtensions',
       'allowedExtensions is a required field'
     ).notEmpty(),
+    check('allowedExtensions', 'allowedExtensions must be an Array').isArray(),
     check(
-      'allowedExtensions',
-      'allowedExtensions must be a string Array'
-    ).isArray(),
+      'allowedExtensions.*',
+      'allowedExtensions must be an Array of alphanumeric Strings'
+    ).isAlphanumeric(),
     validateFields,
   ],
   createPostType
@@ -73,9 +74,15 @@ router.put(
         min: 3,
       }),
     check('name').optional().custom(existsPostTypeByName),
-    check('allowedExtensions', 'allowedExtensions must be a string Array')
+    check('allowedExtensions', 'allowedExtensions must be an Array')
       .optional()
       .isArray(),
+    check(
+      'allowedExtensions.*',
+      'allowedExtensions must be an Array of alphanumeric Strings'
+    )
+      .optional()
+      .isAlphanumeric(),
     validateFields,
   ],
   modifyPostType

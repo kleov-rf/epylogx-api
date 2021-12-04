@@ -27,7 +27,6 @@ const ChatSchema = new Schema<chatEntryInterface>(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    _id: false,
   }
 )
 

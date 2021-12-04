@@ -26,6 +26,7 @@ class epyServer {
     uploadFiles: string
     resetPassword: string
     postTypes: string
+    comments: string
   }
 
   constructor() {
@@ -58,6 +59,7 @@ class epyServer {
       uploadFiles: '/api/upload-files',
       resetPassword: '/api/reset-password',
       postTypes: '/api/post-types',
+      comments: '/api/comments',
     }
 
     // Connect to database
@@ -114,6 +116,7 @@ class epyServer {
       require('../routes/reset-password').default
     )
     this.app.use(this.paths.postTypes, require('../routes/post-types').default)
+    this.app.use(this.paths.comments, require('../routes/comments').default)
   }
 
   sockets() {

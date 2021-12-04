@@ -58,7 +58,6 @@ router.post(
   '/post/:id',
   [
     validateJWT,
-    isMetaUserAdmin,
     hasPostRoles({ postManage: true }),
     check('id', 'post id must be a valid Mongo ObjectId').isMongoId(),
     check('id').custom(existsPostByObjectId),

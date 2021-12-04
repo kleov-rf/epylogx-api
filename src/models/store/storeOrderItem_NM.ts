@@ -18,7 +18,6 @@ const StoreOrderItemSchema = new Schema<storeOrderItemInterface>(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    _id: false,
   }
 )
 

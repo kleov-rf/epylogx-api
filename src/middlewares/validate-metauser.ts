@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express'
-import { Authorship, StoreOrder, UserPodcast } from '../models'
+import { Authorship, Comment, StoreOrder, UserPodcast } from '../models'
 
 const isMetaUserAdmin = (req: Request, res: Response, next: NextFunction) => {
   const { metaUser, isAdmin } = <any>req
@@ -15,6 +15,30 @@ const isMetaUserAdmin = (req: Request, res: Response, next: NextFunction) => {
     return res.status(401).json({
       error: true,
       reason: `${metaUser?.fullName}, you aren't an admin, you can't do this.`,
+    })
+  }
+
+  next()
+}
+
+const isMetaUserNotAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { metaUser, isAdmin } = <any>req
+
+  if (!metaUser) {
+    return res.status(500).json({
+      error: true,
+      reason: 'You first must login and get token to perform this action.',
+    })
+  }
+
+  if (isAdmin) {
+    return res.status(401).json({
+      error: true,
+      reason: `${metaUser?.fullName}, you are an admin, you can't do this.`,
     })
   }
 
@@ -102,47 +126,53 @@ const hasPostRoles = ({
       params: { id },
     } = <any>req
 
-    const authors = await Authorship.getAuthorships({ post: id })
+    const authorships = await Authorship.getAuthorships({ post: id })
+    const authorsArray = authorships.map(
+      (authorship: { author: { toString: () => any } }) =>
+        authorship.author.toString()
+    )
 
-    if (!isAdmin && !authors.includes(metaUser._id)) {
+    if (!isAdmin && !authorsArray.includes(metaUser._id.toString())) {
       return res.status(401).json({
         error: true,
-        reason: 'You must be an Admin to perform this action',
+        reason:
+          'You must be an Admin or an author of this post to perform this action',
       })
     }
 
-    const roles = {
-      userManage,
-      adminManage,
-      postManage,
-      categoryManage,
-      storeManage,
-      podcastManage,
-      storeOrdersManage,
-      iscedManage,
-      postTypeManage,
-    }
+    if (isAdmin) {
+      const roles = {
+        userManage,
+        adminManage,
+        postManage,
+        categoryManage,
+        storeManage,
+        podcastManage,
+        storeOrdersManage,
+        iscedManage,
+        postTypeManage,
+      }
 
-    const requiredRoles = Object.keys(roles).filter(
-      role => (roles as any)[role]
-    )
-    const metaUserRoles = Object.keys(metaUser.roles).filter(
-      role => metaUser.roles[role]
-    )
+      const requiredRoles = Object.keys(roles).filter(
+        role => (roles as any)[role]
+      )
+      const metaUserRoles = Object.keys(metaUser.roles).filter(
+        role => metaUser.roles[role]
+      )
 
-    if (
-      isAdmin &&
-      !(<any>metaUserRoles).includes(...requiredRoles) &&
-      id != metaUser.id
-    ) {
-      return res.status(401).json({
-        error: true,
-        reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
-          roles
-        ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
-          roles
-        ).filter(key => metaUser.roles[key])}`,
-      })
+      if (
+        !(<any>metaUserRoles).includes(...requiredRoles) &&
+        id != metaUser.id
+      ) {
+        return res.status(401).json({
+          error: true,
+          reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
+            roles
+          ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
+            roles
+          ).filter(key => metaUser.roles[key])}`,
+        })
+      }
     }
 
     next()
@@ -175,39 +205,40 @@ const hasPodcastRules = ({
         reason: 'You must be an Admin to perform this action',
       })
     }
+    if (isAdmin) {
+      const roles = {
+        userManage,
+        adminManage,
+        postManage,
+        categoryManage,
+        storeManage,
+        podcastManage,
+        storeOrdersManage,
+        iscedManage,
+        postTypeManage,
+      }
 
-    const roles = {
-      userManage,
-      adminManage,
-      postManage,
-      categoryManage,
-      storeManage,
-      podcastManage,
-      storeOrdersManage,
-      iscedManage,
-      postTypeManage,
-    }
+      const requiredRoles = Object.keys(roles).filter(
+        role => (roles as any)[role]
+      )
+      const metaUserRoles = Object.keys(metaUser.roles).filter(
+        role => metaUser.roles[role]
+      )
 
-    const requiredRoles = Object.keys(roles).filter(
-      role => (roles as any)[role]
-    )
-    const metaUserRoles = Object.keys(metaUser.roles).filter(
-      role => metaUser.roles[role]
-    )
-
-    if (
-      isAdmin &&
-      !(<any>metaUserRoles).includes(...requiredRoles) &&
-      id != metaUser.id
-    ) {
-      return res.status(401).json({
-        error: true,
-        reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
-          roles
-        ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
-          roles
-        ).filter(key => metaUser.roles[key])}`,
-      })
+      if (
+        isAdmin &&
+        !(<any>metaUserRoles).includes(...requiredRoles) &&
+        id != metaUser.id
+      ) {
+        return res.status(401).json({
+          error: true,
+          reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
+            roles
+          ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
+            roles
+          ).filter(key => metaUser.roles[key])}`,
+        })
+      }
     }
 
     next()
@@ -234,45 +265,113 @@ const hasStoreOrderRoles = ({
 
     const { purchaser } = await StoreOrder.getStoreOrder({ id })
 
-    if (!isAdmin && !purchaser.includes(metaUser._id)) {
+    if (!isAdmin && purchaser.toString() != metaUser._id) {
       return res.status(401).json({
         error: true,
         reason: 'You must be an Admin to perform this action',
       })
     }
+    if (isAdmin) {
+      const roles = {
+        userManage,
+        adminManage,
+        postManage,
+        categoryManage,
+        storeManage,
+        podcastManage,
+        storeOrdersManage,
+        iscedManage,
+        postTypeManage,
+      }
 
-    const roles = {
-      userManage,
-      adminManage,
-      postManage,
-      categoryManage,
-      storeManage,
-      podcastManage,
-      storeOrdersManage,
-      iscedManage,
-      postTypeManage,
+      const requiredRoles = Object.keys(roles).filter(
+        role => (roles as any)[role]
+      )
+      const metaUserRoles = Object.keys(metaUser.roles).filter(
+        role => metaUser.roles[role]
+      )
+
+      if (
+        isAdmin &&
+        !(<any>metaUserRoles).includes(...requiredRoles) &&
+        id != metaUser.id
+      ) {
+        return res.status(401).json({
+          error: true,
+          reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
+            roles
+          ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
+            roles
+          ).filter(key => metaUser.roles[key])}`,
+        })
+      }
     }
 
-    const requiredRoles = Object.keys(roles).filter(
-      role => (roles as any)[role]
-    )
-    const metaUserRoles = Object.keys(metaUser.roles).filter(
-      role => metaUser.roles[role]
-    )
+    next()
+  }
+}
 
-    if (
-      isAdmin &&
-      !(<any>metaUserRoles).includes(...requiredRoles) &&
-      id != metaUser.id
-    ) {
+const hasCommentRoles = ({
+  userManage = false,
+  adminManage = false,
+  postManage = false,
+  categoryManage = false,
+  storeManage = false,
+  podcastManage = false,
+  storeOrdersManage = false,
+  iscedManage = false,
+  postTypeManage = false,
+}) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      metaUser,
+      isAdmin,
+      params: { id },
+    } = <any>req
+
+    const comment = await Comment.findById(id)
+
+    if (!isAdmin && comment?.author.toString() != metaUser._id) {
       return res.status(401).json({
         error: true,
-        reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
-          roles
-        ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
-          roles
-        ).filter(key => metaUser.roles[key])}`,
+        reason:
+          'You must be an Admin or the author of this comment to perform this action',
       })
+    }
+    if (isAdmin) {
+      const roles = {
+        userManage,
+        adminManage,
+        postManage,
+        categoryManage,
+        storeManage,
+        podcastManage,
+        storeOrdersManage,
+        iscedManage,
+        postTypeManage,
+      }
+
+      const requiredRoles = Object.keys(roles).filter(
+        role => (roles as any)[role]
+      )
+      const metaUserRoles = Object.keys(metaUser.roles).filter(
+        role => metaUser.roles[role]
+      )
+
+      if (
+        isAdmin &&
+        !(<any>metaUserRoles).includes(...requiredRoles) &&
+        id != metaUser.id
+      ) {
+        return res.status(401).json({
+          error: true,
+          reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
+            roles
+          ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
+            roles
+          ).filter(key => metaUser.roles[key])}`,
+        })
+      }
     }
 
     next()
@@ -282,7 +381,9 @@ const hasStoreOrderRoles = ({
 export {
   hasRoles,
   isMetaUserAdmin,
+  isMetaUserNotAdmin,
   hasPostRoles,
   hasPodcastRules,
   hasStoreOrderRoles,
+  hasCommentRoles,
 }

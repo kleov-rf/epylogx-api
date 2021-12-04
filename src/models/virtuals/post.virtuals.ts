@@ -11,19 +11,18 @@ const assignPostVirtuals = (PostSchema: Schema) => {
 
   // -------- POST CATEGORIES --------
   // _id | post | category
-  PostSchema.virtual('categories.mains', {
-    ref: 'PostCategories',
+  PostSchema.virtual('categories', {
+    ref: 'PostCategory',
     localField: '_id',
     foreignField: 'post',
-    match: { superCategory: { $exists: false } },
   })
 
-  PostSchema.virtual('categories.subs', {
-    ref: 'PostCategories',
-    localField: '_id',
-    foreignField: 'post',
-    match: { superCategory: { $exists: true } },
-  })
+  // PostSchema.virtual('categories.subs', {
+  //   ref: 'PostCategory',
+  //   localField: '_id',
+  //   foreignField: 'post',
+  //   match: { 'superCategory': { $exists: true } },
+  // })
 
   // -------- COMMENTS --------
   // _id | author | post | text | likes | replies | superComment | isHidden

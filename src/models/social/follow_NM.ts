@@ -19,7 +19,6 @@ const FollowSchema = new Schema<followInterface>(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    _id: false,
   }
 )
 

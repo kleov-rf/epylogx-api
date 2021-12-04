@@ -131,11 +131,20 @@ const updatePostFiles = async (req: Request, res: Response) => {
     }
 
     if (preview) {
-      const { secure_url } = await cloudinary.uploader.upload(file.tempFilePath)
+      const { secure_url } = await cloudinary.uploader.upload(
+        preview.tempFilePath
+      )
       post.previewImgURL = secure_url
     }
 
     if (file && !preview) {
+      const nombreArray = post.previewImgURL.split('/')
+      const nombreExt = nombreArray[nombreArray.length - 1]
+      const [public_id] = nombreExt.split('.')
+
+      if (!Object.values(defaultPhotos).includes(public_id))
+        cloudinary.uploader.destroy(public_id)
+
       const fileURLwithoutPage = post.fileURL.split('upload/')
       const fileURLPaged = fileURLwithoutPage.join('upload/pg_1/')
       const fileURLPagedWithoutExtension = fileURLPaged.split('.').slice(0, 3)
@@ -147,6 +156,8 @@ const updatePostFiles = async (req: Request, res: Response) => {
     }
 
     await post.save()
+
+    res.json(post)
   } catch (error) {
     res.status(500).json({
       errors: true,

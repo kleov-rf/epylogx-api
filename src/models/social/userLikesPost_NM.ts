@@ -18,7 +18,6 @@ const UserLikesPostSchema = new Schema<userLikesPost>(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    _id: false,
   }
 )
 

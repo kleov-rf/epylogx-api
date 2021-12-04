@@ -27,7 +27,7 @@ const assignCategoryStatics = (categorySchema: Schema) => {
       Object.assign(query, { superCategory: branchOf })
     }
 
-    const category = await this.findOne(query)
+    const category = await this.findOne(query).populate('ISCED')
 
     if (!category) {
       throw new Error(`Couldn't find any category results with data: ${query}`)
@@ -43,6 +43,7 @@ const assignCategoryStatics = (categorySchema: Schema) => {
     branchOf: branchesOf,
   }: categoriesDataQuery) {
     const query = {}
+
     if (isced && validator.isMongoId(isced)) {
       Object.assign(query, { ISCED: isced })
     }
@@ -57,13 +58,15 @@ const assignCategoryStatics = (categorySchema: Schema) => {
       Object.assign(query, { superCategory: branchesOf })
     }
 
-    const category = await this.find(query)
+    const categories = await this.find(query)
+      .populate('superCategory')
+      .populate('ISCED')
 
-    if (!category) {
+    if (!categories) {
       throw new Error(`Couldn't find any category results with data: ${query}`)
     }
 
-    return category
+    return categories
   }
 }
 

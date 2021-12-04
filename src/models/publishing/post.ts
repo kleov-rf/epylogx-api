@@ -44,7 +44,6 @@ assignPostVirtuals(PostSchema)
 assignPostStatics(PostSchema)
 
 PostSchema.index({
-  'info.title': 1,
   uploadDate: 1,
 })
 

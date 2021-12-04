@@ -18,7 +18,6 @@ const AuthorshipSchema = new Schema<authorshipInterface>(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    _id: false,
   }
 )
 

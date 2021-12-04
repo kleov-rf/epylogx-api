@@ -1,6 +1,7 @@
 import {
   Admin,
   Category,
+  Comment,
   Isced,
   Podcast,
   Post,
@@ -112,6 +113,14 @@ const existsPostTypeByName = async (name: string) => {
   }
 }
 
+const existsCommentByObjectId = async (id: string) => {
+  const comment = await Comment.findById(id)
+
+  if (!comment) {
+    throw new Error(`Comment with id ${id} wasn't found`)
+  }
+}
+
 export {
   existsUserByObjectId,
   existsAdminByObjectId,
@@ -126,4 +135,5 @@ export {
   existsStoreItemByObjectId,
   existsPostTypeByObjectId,
   existsPostTypeByName,
+  existsCommentByObjectId,
 }

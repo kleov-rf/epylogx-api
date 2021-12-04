@@ -18,7 +18,6 @@ const UserPodcastSchema = new Schema<userPodcastInterface>(
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    _id: false,
   }
 )
 

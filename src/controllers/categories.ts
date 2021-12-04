@@ -39,7 +39,7 @@ const categoriesGet = async (req: Request, res: Response) => {
 
   const iscedsIds = isceds.map((isced: any) => isced.id)
   const categoriesFiltered = categories.filter((category: any) =>
-    iscedsIds.includes(category.ISCED.toString())
+    iscedsIds.includes(category.ISCED._id.toString())
   )
 
   return res.json(categoriesFiltered)
@@ -89,7 +89,6 @@ const categoriesPut = async (req: Request, res: Response) => {
   }
 
   Object.assign(data, categoriesPayload)
-  console.log(data)
 
   const newCategory = await Category.findByIdAndUpdate(id, data, {
     new: true,

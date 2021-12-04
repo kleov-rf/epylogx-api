@@ -11,9 +11,20 @@ const assignPostStatics = (postSchema: Schema) => {
     }
 
     const post = await this.findOne(query)
+      .populate('type')
+      .populate({
+        path: 'authors',
+        populate: { path: 'author', select: '-store -postsPreferences' },
+      })
+      .populate({
+        path: 'categories',
+        populate: { path: 'category', populate: 'ISCED superCategory' },
+      })
 
     if (!post) {
-      throw new Error(`Couldn't find any post with data ${query}`)
+      throw new Error(
+        `Couldn't find any post with data ${JSON.stringify(query)}`
+      )
     }
 
     return post
@@ -30,11 +41,10 @@ const assignPostStatics = (postSchema: Schema) => {
     isActive,
     isApproved,
   }: postDataQuery) {
-    const types = ['article', 'picture', 'audio', 'video']
     const query = {}
 
-    if (type && validator.isAlpha(type) && validator.isIn(type, types)) {
-      Object.assign(query, { type: type })
+    if (type && validator.isMongoId(type)) {
+      Object.assign(query, { type })
     }
 
     if (title && validator.isAlphanumeric(title, 'es-ES', { ignore: ' -' })) {
@@ -84,6 +94,15 @@ const assignPostStatics = (postSchema: Schema) => {
     }
 
     const posts = await this.find(query)
+      .populate('type')
+      .populate({
+        path: 'authors',
+        populate: { path: 'author', select: '-store -postsPreferences' },
+      })
+      .populate({
+        path: 'categories',
+        populate: { path: 'category', populate: 'ISCED superCategory' },
+      })
 
     if (!posts) {
       throw new Error(`Couldn't find any post with data: ${query}`)

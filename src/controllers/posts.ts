@@ -99,8 +99,8 @@ const modifyPost = async (req: Request, res: Response) => {
   const {
     title,
     description,
-    receivedAuthors,
-    receivedCategories,
+    authors: receivedAuthors,
+    categories: receivedCategories,
     commentsEnabled,
     likes,
     releaseDate,
@@ -155,12 +155,12 @@ const modifyPost = async (req: Request, res: Response) => {
       }
     })
 
-    oldAuthors.forEach((author: any) => {
-      Authorship.deleteOne({ post: id, author })
+    await oldAuthors.forEach(async (author: any) => {
+      await Authorship.deleteOne({ post: id, author })
     })
 
-    newAuthors.forEach(author => {
-      new Authorship({ author, post: id })
+    await newAuthors.forEach(async author => {
+      await new Authorship({ author, post: id })
     })
   }
 
@@ -182,12 +182,12 @@ const modifyPost = async (req: Request, res: Response) => {
       }
     })
 
-    oldCategories.forEach((category: any) => {
-      PostCategory.deleteOne({ post: id, category })
+    await oldCategories.forEach(async (category: any) => {
+      await PostCategory.deleteOne({ post: id, category })
     })
 
-    newCategories.forEach(category => {
-      new PostCategory({ category, post: id })
+    await newCategories.forEach(async category => {
+      await new PostCategory({ category, post: id }).save()
     })
   }
 

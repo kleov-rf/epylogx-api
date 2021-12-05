@@ -198,11 +198,16 @@ const hasPodcastRules = ({
     } = <any>req
 
     const podcastOwners = await UserPodcast.getUsersPodcasts({ podcast: id })
+    const ownersArray = podcastOwners.map(
+      (userPodcast: { owner: { toString: () => any } }) =>
+        userPodcast.owner.toString()
+    )
 
-    if (!isAdmin && !podcastOwners.includes(metaUser._id)) {
+    if (!isAdmin && !ownersArray.includes(metaUser._id.toString())) {
       return res.status(401).json({
         error: true,
-        reason: 'You must be an Admin to perform this action',
+        reason:
+          'You must be an Admin or an owner of this podcast to perform this action',
       })
     }
     if (isAdmin) {

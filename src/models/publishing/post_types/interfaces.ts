@@ -15,7 +15,7 @@ interface pictureInterface extends postInterface {
 interface pictureInterfaceModel extends Model<pictureInterface> {}
 
 interface audioInterface extends postInterface, AudiovisualInterface {
-  podcast: Schema.Types.ObjectId
+  podcast?: Schema.Types.ObjectId
 }
 
 interface audioInterfaceModel extends Model<audioInterface> {}

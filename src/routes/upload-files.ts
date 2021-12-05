@@ -11,7 +11,7 @@ import {
 import {
   existsAdminByObjectId,
   existsCategoryByObjectId,
-  existsPodcastByObjectId,
+  existsPodcastById,
   existsPostByObjectId,
   existsStoreItemByObjectId,
   existsUserByObjectId,
@@ -48,7 +48,7 @@ router.post(
     isMetaUserAdmin,
     hasPodcastRules({ podcastManage: true }),
     check('id', 'podcast id must be a valid Mongo ObjectId').isMongoId(),
-    check('id').custom(existsPodcastByObjectId),
+    check('id').custom(existsPodcastById),
     validateFiles,
     validateFields,
   ],

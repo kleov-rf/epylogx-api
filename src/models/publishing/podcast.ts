@@ -31,11 +31,18 @@ PodcastSchema.virtual('owners', {
 PodcastSchema.statics.getPodcast = async function ({ id }) {
   const query = {}
 
-  if (id && validator.isMongoId(id)) {
-    Object.assign(query, { _id: id })
+  if (id) {
+    if (validator.isMongoId(id)) {
+      Object.assign(query, { _id: id })
+    } else {
+      Object.assign(query, { podcastId: id })
+    }
   }
 
-  const podcast = await this.findOne(query)
+  const podcast = await this.findOne(query).populate({
+    path: 'owners',
+    populate: 'owner',
+  })
 
   if (!podcast) {
     throw new Error(`Couldn't find any podcast results with data: ${query}`)
@@ -59,7 +66,11 @@ PodcastSchema.statics.getPodcasts = async function ({
     Object.assign(query, { 'info.title': titleRegex })
   }
 
-  const podcasts = await this.find(query)
+  const podcasts = await this.find(query).populate({
+    path: 'owners',
+    select: 'owner',
+    populate: { path: 'owner', select: 'userId givenName familyName' },
+  })
 
   if (!podcasts) {
     throw new Error(`Couldn't find any podcasts results with data: ${query}`)

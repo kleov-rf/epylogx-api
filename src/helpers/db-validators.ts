@@ -78,8 +78,8 @@ const existsISCEDByObjectId = async (id: string) => {
   }
 }
 
-const existsPodcastByObjectId = async (id: string) => {
-  const podcast = await Podcast.findById(id)
+const existsPodcastById = async (id: string) => {
+  const podcast = await Podcast.getPodcast({ id })
   if (!podcast) {
     throw new Error(`Podcast with id ${id} wasn't found`)
   }
@@ -130,7 +130,7 @@ export {
   existsCategoryByObjectId,
   existsISCEDByLevel,
   existsISCEDByObjectId,
-  existsPodcastByObjectId,
+  existsPodcastById,
   existsPostByObjectId,
   existsStoreItemByObjectId,
   existsPostTypeByObjectId,

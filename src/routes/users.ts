@@ -1,6 +1,21 @@
 import { Router } from 'express'
 import { check } from 'express-validator'
+import { createStoreOrder } from '../controllers/store'
 import {
+  createUserFollowing,
+  createUserInterest,
+  createUserLikedPost,
+  createUserSavedPost,
+  getUserFollowers,
+  getUserFollowings,
+  getUserInterests,
+  getUserLikedPosts,
+  getUserPodcasts,
+  getUserPosts,
+  getUserRecentChats,
+  getUserSavedPosts,
+  getUserStoreOrders,
+  notifyUserFollowing,
   userGet,
   usersDelete,
   usersGet,
@@ -11,6 +26,9 @@ import {
   existsEmail,
   existsUserByObjectId,
   existsMetaUserId,
+  existsStoreItemByObjectId,
+  existsCategoryByObjectId,
+  existsPostByObjectId,
 } from '../helpers/db-validators'
 import validateFields from '../middlewares/validate-fields'
 import validateJWT from '../middlewares/validate-jwt'
@@ -114,27 +132,240 @@ router.delete(
   usersDelete
 )
 
-router.get('/:id/interests')
-router.post('/:id/interests')
+router.get(
+  '/:id/interests',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  getUserInterests
+)
+router.post(
+  '/:id/interests',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    check(
+      'category',
+      'category field value must be a valid Mongo ObjecId'
+    ).isMongoId(),
+    check('category').custom(existsCategoryByObjectId),
+    validateFields,
+  ],
+  createUserInterest
+)
 
-router.get('/:id/posts')
+router.get(
+  '/:id/posts',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  getUserPosts
+)
 
-router.get('/:id/likedPosts')
-router.post('/:id/likedPosts')
+router.get(
+  '/:id/likedPosts',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  getUserLikedPosts
+)
+router.post(
+  '/:id/likedPosts',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    check('post', 'post field value must be a valid Mongo ObjecId').isMongoId(),
+    check('post').custom(existsPostByObjectId),
+    validateFields,
+  ],
+  createUserLikedPost
+)
 
-router.get('/:id/savedPosts')
-router.post('/:id/savedPosts')
+router.get(
+  '/:id/savedPosts',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  getUserSavedPosts
+)
+router.post(
+  '/:id/savedPosts',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    check('post', 'post field value must be a valid Mongo ObjecId').isMongoId(),
+    check('post').custom(existsPostByObjectId),
+    validateFields,
+  ],
+  createUserSavedPost
+)
 
-router.get('/:id/podcasts')
+router.get(
+  '/:id/podcasts',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  getUserPodcasts
+)
 
-router.get('/:id/chats')
+router.get(
+  '/:id/chats',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    check(
+      'days',
+      'days field value must be a valid number representation, minimum 1'
+    )
+      .optional()
+      .isInt({ min: 1 }),
+    validateFields,
+  ],
+  getUserRecentChats
+)
 
-router.get('/:id/followers')
-router.post('/:id/followers')
+router.get(
+  '/:id/followers',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  getUserFollowers
+)
 
-router.get('/:id/following')
-router.post('/:id/following')
+router.get(
+  '/:id/following',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  getUserFollowings
+)
 
-router.get('/:id/store/orders')
+router.post(
+  '/:id/following',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    check(
+      'followed',
+      'followed field must be a valid Mongo ObjecId'
+    ).isMongoId(),
+    check('followed').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  createUserFollowing
+)
+
+router.put(
+  '/:id/following',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    check(
+      'followed',
+      'followed field must be a valid Mongo ObjecId'
+    ).isMongoId(),
+    check('followed').custom(existsUserByObjectId),
+    check('notify', 'notify field is required').notEmpty(),
+    check(
+      'notify',
+      'notify field value must be a valid boolean representation'
+    ).isBoolean(),
+    validateFields,
+  ],
+  notifyUserFollowing
+)
+
+router.get(
+  '/:id/orders',
+  [
+    validateJWT,
+    hasRoles({ userManage: true }),
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    validateFields,
+  ],
+  getUserStoreOrders
+)
+router.post(
+  '/:id/orders',
+  [
+    validateJWT,
+    hasRoles({ storeOrdersManage: true }),
+    check('id', 'not a mongo ObjecId').isMongoId(),
+    check('id').custom(existsUserByObjectId),
+    check('ticket', 'ticket field value must not be empty').notEmpty(),
+    check('ticket', 'ticket must be a valid storeItem, units array').isArray(),
+    check(
+      'ticket.*.storeItem',
+      'storeItems fields in ticket Object are required'
+    ).notEmpty(),
+    check('ticket.*.storeItem').custom(existsStoreItemByObjectId),
+    check(
+      'ticket.*.units',
+      'units fields in ticket Object are required'
+    ).notEmpty(),
+    check(
+      'ticket.*.units',
+      'units fields in ticket Object must be number valid representation'
+    ).isInt({ min: 0 }),
+    check('method', 'method field is required').notEmpty(),
+    check('method', 'method field value must be [card, cash]').isIn([
+      'card',
+      'cash',
+    ]),
+    check('address', 'address field is required').notEmpty(),
+    check(
+      'address',
+      'address must be alphanumeric and accepts [ñ, #-]'
+    ).isAlphanumeric('es-ES', { ignore: 'ñ, #-' }),
+    check('purchasedDate', 'purchasedDate field is required').notEmpty(),
+    check(
+      'purchasedDate',
+      'purchasedDate field value must be a valid ISO8601 date representation'
+    ).isISO8601(),
+    validateFields,
+  ],
+  createStoreOrder
+)
 
 export default router

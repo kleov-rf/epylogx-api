@@ -17,6 +17,7 @@ interface StoreItemModel extends Model<storeItemInterface> {
 interface storeOrderItemInterface {
   storeOrder?: string
   storeItem?: string
+  units: number
 }
 
 interface StoreOrderItemModel extends Model<storeOrderItemInterface> {
@@ -25,14 +26,11 @@ interface StoreOrderItemModel extends Model<storeOrderItemInterface> {
 
 interface storeOrderInterface {
   purchaser?: Schema.Types.ObjectId
-  ticket?: Array<{
-    item: Schema.Types.ObjectId /* StoreItem.id */
-    units: number
-  }>
   method?: string /* 'card' | 'cash' */
   address?: string
   purchasedDate?: Date
   state?: string /* 'pendant' | 'confirmed' | 'shipped' */
+  isActive: boolean
 }
 
 interface StoreOrderModel extends Model<storeOrderInterface> {
@@ -43,6 +41,7 @@ interface StoreOrderModel extends Model<storeOrderInterface> {
 interface storeOrderDataQuery {
   hasItem?: string
   beforeDate?: Date
+  isActive?: boolean
   afterDate?: Date
   purchaser?: string
   ticket?: Array<{

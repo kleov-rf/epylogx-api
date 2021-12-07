@@ -14,7 +14,10 @@ const FollowSchema = new Schema<followInterface>(
       required: true,
       ref: 'User',
     },
-    notify: Boolean,
+    notify: {
+      type: Boolean,
+      default: false,
+    }
   },
   {
     toJSON: { virtuals: true },

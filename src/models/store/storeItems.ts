@@ -1,3 +1,4 @@
+import { ESTALE } from 'constants'
 import { model, Schema } from 'mongoose'
 import validator from 'validator'
 import { DescriptableSchema } from '../abstracts'
@@ -15,8 +16,9 @@ const StoreItemSchema = new Schema<storeItemInterface>(
     },
     pictureURL: {
       type: String,
-      default: 'https://res.cloudinary.com/epylog/image/upload/v1637203709/defaultStoreItem_vs07iy.png'
-    }
+      default:
+        'https://res.cloudinary.com/epylog/image/upload/v1637203709/defaultStoreItem_vs07iy.png',
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -41,7 +43,7 @@ StoreItemSchema.statics.getStoreItem = async function ({ id }) {
 }
 
 StoreItemSchema.statics.getStoreItems = async function ({
-  info: { title },
+  info,
   price,
   abovePrice,
   belowPrice,
@@ -49,8 +51,12 @@ StoreItemSchema.statics.getStoreItems = async function ({
   isActive,
 }: storeItemInterface) {
   const query = {}
-  if (title && validator.isAlphanumeric(title, 'es-ES', { ignore: ' -_' })) {
-    const titleRegex = new RegExp(title)
+  if (
+    info &&
+    info?.title &&
+    validator.isAlphanumeric(info?.title, 'es-ES', { ignore: ' -_' })
+  ) {
+    const titleRegex = new RegExp(info?.title)
     Object.assign(query, { 'info.title': titleRegex })
   }
   if (price) {
@@ -65,11 +71,9 @@ StoreItemSchema.statics.getStoreItems = async function ({
   if (isActive != undefined) {
     Object.assign(query, { isActive })
   }
-  if (hasStock) {
-    Object.assign(query, { stock: { $gt: 0 } })
-  }
-  if (!hasStock) {
-    Object.assign(query, { stock: { $eq: 0 } })
+  if (hasStock != undefined) {
+    if (hasStock) Object.assign(query, { stock: { $gt: 0 } })
+    else Object.assign(query, { stock: { $eq: 0 } })
   }
 
   const storeItems = await this.find(query)

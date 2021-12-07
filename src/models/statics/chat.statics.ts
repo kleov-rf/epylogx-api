@@ -1,45 +1,42 @@
 import moment from 'moment'
-import { isValidObjectId, Schema } from 'mongoose'
+import { Schema } from 'mongoose'
 import validator from 'validator'
 import { minifiedISOString } from '../../helpers/adjust-input'
 import { entriesDataQuery } from './interfaces'
 
 const assignChatStatics = (chatSchema: Schema) => {
   chatSchema.statics.getRecentChatsToId = async function (
-    userId: string,
-    days: Number = 0
+    metaUserId: string,
+    days: number = 2
   ) {
     const query = {}
 
-    if (!validator.isMongoId(userId)) {
+    if (!validator.isMongoId(metaUserId)) {
       throw new Error('Not a valid userId')
     }
 
     if (days != 0) {
-      const yesterday = moment().set('date', -days)
-      const yesterdayISO = minifiedISOString(yesterday)
-
-      Object.assign(query, { sentDate: { $gte: yesterdayISO } })
+      const yesterday = moment().set('day', 2 - days)
+      Object.assign(query, { sentDate: { $gte: yesterday.toISOString() } })
     }
 
     const [chatsSentToId, chatsSentFromId] = await Promise.all([
       this.distinct('transmitter', {
-        receiver: userId,
+        receiver: metaUserId,
         ...query,
       }),
       this.distinct('receiver', {
-        transmitter: userId,
+        transmitter: metaUserId,
         ...query,
       }),
     ])
 
-    const chats = new Set([...chatsSentFromId, ...chatsSentToId])
-
-    if (chats.size == 0) {
-      throw new Error(
-        `Couldn't find any chats from userId ${userId}, talk with someone`
-      )
-    }
+    const chats = Array.from(
+      new Set([
+        ...chatsSentFromId.map((user: any) => user.toString()),
+        ...chatsSentToId.map((user: any) => user.toString()),
+      ])
+    )
 
     return chats
   }
@@ -61,11 +58,9 @@ const assignChatStatics = (chatSchema: Schema) => {
       Object.assign(query, { receiver: to })
     }
 
-    if (
-      text &&
-      validator.isAlphanumeric(text, 'es-ES', { ignore: ' ;,.¿?¡!' })
-    ) {
-      Object.assign(query, { text: text })
+    if (text && validator.isAlphanumeric(text, 'es-ES')) {
+      const regexText = new RegExp(text, 'i')
+      Object.assign(query, { text: regexText })
     }
 
     if (recentDays !== 0) {

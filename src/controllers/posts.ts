@@ -102,7 +102,6 @@ const modifyPost = async (req: Request, res: Response) => {
     authors: receivedAuthors,
     categories: receivedCategories,
     commentsEnabled,
-    likes,
     releaseDate,
     isActive,
     isApproved,
@@ -118,9 +117,6 @@ const modifyPost = async (req: Request, res: Response) => {
   }
   if (commentsEnabled != undefined) {
     Object.assign(data, { 'social.commentsEnabled': commentsEnabled })
-  }
-  if (likes) {
-    Object.assign(data, { likes })
   }
   if (releaseDate) {
     Object.assign(data, { releaseDate })

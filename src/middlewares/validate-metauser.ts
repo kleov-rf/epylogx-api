@@ -1,5 +1,13 @@
 import { NextFunction, Request, Response } from 'express'
-import { Authorship, Comment, StoreOrder, UserPodcast } from '../models'
+import {
+  Admin,
+  Authorship,
+  Chat,
+  Comment,
+  StoreOrder,
+  User,
+  UserPodcast,
+} from '../models'
 
 const isMetaUserAdmin = (req: Request, res: Response, next: NextFunction) => {
   const { metaUser, isAdmin } = <any>req
@@ -45,6 +53,30 @@ const isMetaUserNotAdmin = (
   next()
 }
 
+const isSameMetaUserModel = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { receiver, transmitter, from, to } = req.body
+
+  const [user1, user2, admin1, admin2] = await Promise.all([
+    User.findById(receiver ?? to),
+    User.findById(transmitter ?? from),
+    Admin.findById(receiver ?? to),
+    Admin.findById(transmitter ?? from),
+  ])
+
+  if ((user1 && admin2) || (admin1 && user2)) {
+    return res.status(401).json({
+      error: true,
+      reason: `Both users don't have the same model (user or admin)`,
+    })
+  }
+
+  next()
+}
+
 const hasRoles = ({
   userManage = false,
   adminManage = false,
@@ -70,38 +102,40 @@ const hasRoles = ({
       })
     }
 
-    const roles = {
-      userManage,
-      adminManage,
-      postManage,
-      categoryManage,
-      storeManage,
-      podcastManage,
-      storeOrdersManage,
-      iscedManage,
-      postTypeManage,
-    }
+    if (isAdmin) {
+      const roles = {
+        userManage,
+        adminManage,
+        postManage,
+        categoryManage,
+        storeManage,
+        podcastManage,
+        storeOrdersManage,
+        iscedManage,
+        postTypeManage,
+      }
 
-    const requiredRoles = Object.keys(roles).filter(
-      role => (roles as any)[role]
-    )
-    const metaUserRoles = Object.keys(metaUser.roles).filter(
-      role => metaUser.roles[role]
-    )
+      const requiredRoles = Object.keys(roles).filter(
+        role => (roles as any)[role]
+      )
+      const metaUserRoles = Object.keys(metaUser.roles).filter(
+        role => metaUser.roles[role]
+      )
 
-    if (
-      isAdmin &&
-      !(<any>metaUserRoles).includes(...requiredRoles) &&
-      id != metaUser.id
-    ) {
-      return res.status(401).json({
-        error: true,
-        reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
-          roles
-        ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
-          roles
-        ).filter(key => metaUser.roles[key])}`,
-      })
+      if (
+        isAdmin &&
+        !(<any>metaUserRoles).includes(...requiredRoles) &&
+        id != metaUser.id
+      ) {
+        return res.status(401).json({
+          error: true,
+          reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
+            roles
+          ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
+            roles
+          ).filter(key => metaUser.roles[key])}`,
+        })
+      }
     }
 
     next()
@@ -383,6 +417,73 @@ const hasCommentRoles = ({
   }
 }
 
+const hasChatEntryRoles = ({
+  userManage = false,
+  adminManage = false,
+  postManage = false,
+  categoryManage = false,
+  storeManage = false,
+  podcastManage = false,
+  storeOrdersManage = false,
+  iscedManage = false,
+  postTypeManage = false,
+}) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      metaUser,
+      isAdmin,
+      params: { id },
+    } = <any>req
+
+    const chatEntry = await Chat.findById(id)
+
+    if (!isAdmin && chatEntry?.transmitter.toString() != metaUser._id) {
+      return res.status(401).json({
+        error: true,
+        reason:
+          'You must be an Admin or the author of this chat entry to perform this action',
+      })
+    }
+    if (isAdmin) {
+      const roles = {
+        userManage,
+        adminManage,
+        postManage,
+        categoryManage,
+        storeManage,
+        podcastManage,
+        storeOrdersManage,
+        iscedManage,
+        postTypeManage,
+      }
+
+      const requiredRoles = Object.keys(roles).filter(
+        role => (roles as any)[role]
+      )
+      const metaUserRoles = Object.keys(metaUser.roles).filter(
+        role => metaUser.roles[role]
+      )
+
+      if (
+        isAdmin &&
+        !(<any>metaUserRoles).includes(...requiredRoles) &&
+        id != metaUser.id
+      ) {
+        return res.status(401).json({
+          error: true,
+          reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
+            roles
+          ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
+            roles
+          ).filter(key => metaUser.roles[key])}`,
+        })
+      }
+    }
+
+    next()
+  }
+}
+
 export {
   hasRoles,
   isMetaUserAdmin,
@@ -391,4 +492,6 @@ export {
   hasPodcastRules,
   hasStoreOrderRoles,
   hasCommentRoles,
+  isSameMetaUserModel,
+  hasChatEntryRoles,
 }

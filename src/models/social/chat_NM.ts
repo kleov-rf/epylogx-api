@@ -7,7 +7,7 @@ const ChatSchema = new Schema<chatEntryInterface>(
     transmitter: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: 'User'
+      ref: 'User',
     },
     text: {
       type: String,
@@ -16,10 +16,18 @@ const ChatSchema = new Schema<chatEntryInterface>(
     receiver: {
       type: Schema.Types.ObjectId,
       required: true,
-      ref: 'User'
+      ref: 'User',
     },
     sentDate: Date,
     isLiked: {
+      type: Boolean,
+      default: false,
+    },
+    isHidden: {
+      type: Boolean,
+      default: false,
+    },
+    isEdited: {
       type: Boolean,
       default: false,
     },
@@ -38,6 +46,10 @@ ChatSchema.index({
 
 assignChatStatics(ChatSchema)
 
-const Chat = model<chatEntryInterface, ChatEntryModel>('Chat', ChatSchema, 'chats')
+const Chat = model<chatEntryInterface, ChatEntryModel>(
+  'Chat',
+  ChatSchema,
+  'chats'
+)
 
 export default Chat

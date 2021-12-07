@@ -1,12 +1,14 @@
 import {
   Admin,
   Category,
+  Chat,
   Comment,
   Isced,
   Podcast,
   Post,
   PostType,
   StoreItem,
+  StoreOrder,
   User,
 } from '../models'
 
@@ -32,6 +34,17 @@ const existsMetaUserId = async (metaUserId: string) => {
 
   if (user || admin) {
     throw new Error(`User with ${metaUserId} already exists. Try another one.`)
+  }
+}
+
+const existsMetaUserbyObjectId = async (metaUserId: string) => {
+  const [user, admin] = await Promise.all([
+    User.findById(metaUserId),
+    Admin.findById(metaUserId),
+  ])
+
+  if (!user && !admin) {
+    throw new Error(`User with id ${metaUserId} doesn't exist`)
   }
 }
 
@@ -90,10 +103,18 @@ const existsPostByObjectId = async (id: string) => {
     throw new Error(`Post with id ${id} wasn't found`)
   }
 }
+
 const existsStoreItemByObjectId = async (id: string) => {
   const storeItem = await StoreItem.findById(id)
   if (!storeItem) {
     throw new Error(`StoreItem with id ${id} wasn't found`)
+  }
+}
+
+const existsStoreOrderByObjectId = async (id: string) => {
+  const storeOrder = await StoreOrder.findById(id)
+  if (!storeOrder) {
+    throw new Error(`StoreOrder with id ${id} wasn't found`)
   }
 }
 
@@ -121,6 +142,12 @@ const existsCommentByObjectId = async (id: string) => {
   }
 }
 
+const existsChatEntry = async (id: string) => {
+  const chatEntry = await Chat.findById(id)
+
+  if (!chatEntry) throw new Error(`Chat entry with id ${id} doesn't exist`)
+}
+
 export {
   existsUserByObjectId,
   existsAdminByObjectId,
@@ -136,4 +163,7 @@ export {
   existsPostTypeByObjectId,
   existsPostTypeByName,
   existsCommentByObjectId,
+  existsMetaUserbyObjectId,
+  existsChatEntry,
+  existsStoreOrderByObjectId,
 }

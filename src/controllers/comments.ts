@@ -63,12 +63,15 @@ const createComment = async (req: Request, res: Response) => {
 
 const modifyComment = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { text, isHidden } = req.body
+  const { text, isHidden, likes } = req.body
 
   const data = { text }
 
   if (isHidden != undefined) {
     Object.assign(data, { isHidden })
+  }
+  if (likes) {
+    Object.assign(data, { likes: Number(likes) })
   }
 
   const newComment = await Comment.findByIdAndUpdate(id, data, { new: true })

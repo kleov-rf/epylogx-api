@@ -1,7 +1,20 @@
 import { Request, Response } from 'express'
-import { User } from '../models'
+import {
+  Admin,
+  Authorship,
+  Chat,
+  Follow,
+  StoreOrder,
+  User,
+  UserLikedPost,
+  UserPodcast,
+  UserSavedPost,
+} from '../models'
 import bcrypt from 'bcryptjs'
 import validator from 'validator'
+import { UserInterest } from '../models/social'
+import { Document, Types } from 'mongoose'
+import { userInterface } from '../models/social/interfaces'
 
 const userGet = async (req: Request, res: Response) => {
   const { id } = req.params
@@ -36,6 +49,111 @@ const usersGet = async (req: Request, res: Response) => {
   }
 
   return res.json(users)
+}
+
+const getUserInterests = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const userInterests = await UserInterest.getUserInterests({ interested: id })
+  return res.json(userInterests)
+}
+
+const createUserInterest = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { category } = req.body
+  const newUserInterest = new UserInterest({ category, interested: id })
+  await newUserInterest.save()
+  return res.json(newUserInterest)
+}
+
+const getUserPosts = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const userPosts = await Authorship.getAuthorships({ author: id })
+  return res.json(userPosts)
+}
+
+const getUserLikedPosts = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const userLikedPosts = await UserLikedPost.getUserLikedPosts({ user: id })
+  return res.json(userLikedPosts)
+}
+
+const createUserLikedPost = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { post } = req.body
+  const newUserLikedPost = new UserLikedPost({ post, user: id })
+  await newUserLikedPost.save()
+  return res.json(newUserLikedPost)
+}
+
+const getUserSavedPosts = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const userSavedPosts = await UserSavedPost.getUsersSavedPosts({ user: id })
+  return res.json(userSavedPosts)
+}
+
+const createUserSavedPost = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { post } = req.body
+  const newUserSavedPost = new UserSavedPost({ post, user: id })
+  await newUserSavedPost.save()
+  return res.json(newUserSavedPost)
+}
+
+const getUserPodcasts = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const userPodcasts = await UserPodcast.getUsersPodcasts({ owner: id })
+  return res.json(userPodcasts)
+}
+
+const getUserRecentChats = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { days = 3 } = req.query
+  const userRecentChats = await Chat.getRecentChatsToId(id, Number(days))
+
+  const recentChattedUsers = await Promise.all(
+    userRecentChats.map((id: any) => User.findById(id))
+  )
+
+  return res.json(recentChattedUsers)
+}
+
+const getUserFollowers = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const userFollowers = await Follow.getFollows({ followed: id })
+  return res.json(userFollowers)
+}
+
+const getUserFollowings = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const userFollowings = await Follow.getFollows({ follower: id })
+  return res.json(userFollowings)
+}
+
+const createUserFollowing = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { followed } = req.body
+  const newUserFollowing = new Follow({ followed, follower: id })
+  await newUserFollowing.save()
+  return res.json(newUserFollowing)
+}
+
+const notifyUserFollowing = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { followed, notify } = req.body
+  const userFollowing = await Follow.findOne({ follower: id, followed })
+  const modifiedUserFollowing = await Follow.findByIdAndUpdate(
+    (<any>userFollowing)._id,
+    {
+      notify: !!notify,
+    }
+  )
+  return res.json(modifiedUserFollowing)
+}
+
+const getUserStoreOrders = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const userStoreOrders = await StoreOrder.getStoreOrders({ purchaser: id })
+  return res.json(userStoreOrders)
 }
 
 const usersPost = async (req: Request, res: Response) => {
@@ -90,4 +208,24 @@ const usersDelete = async (req: Request, res: Response) => {
   })
 }
 
-export { userGet, usersGet, usersPost, usersPut, usersDelete }
+export {
+  userGet,
+  usersGet,
+  usersPost,
+  usersPut,
+  usersDelete,
+  getUserInterests,
+  getUserPosts,
+  getUserLikedPosts,
+  getUserSavedPosts,
+  getUserPodcasts,
+  getUserRecentChats,
+  getUserFollowers,
+  getUserFollowings,
+  getUserStoreOrders,
+  createUserFollowing,
+  createUserInterest,
+  createUserLikedPost,
+  createUserSavedPost,
+  notifyUserFollowing,
+}

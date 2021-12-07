@@ -105,6 +105,9 @@ router.put(
       .isLength({
         min: 1,
       }),
+    check('likes', 'likes field must be a valid number representation')
+      .optional()
+      .isInt(),
     check('isHidden', 'isHidden field must be a valid boolean representation')
       .optional()
       .isBoolean(),

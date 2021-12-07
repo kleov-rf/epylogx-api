@@ -14,6 +14,10 @@ const StoreOrderItemSchema = new Schema<storeOrderItemInterface>(
       required: true,
       ref: 'StoreItem',
     },
+    units: {
+      type: Number,
+      required: true,
+    },
   },
   {
     toJSON: { virtuals: true },

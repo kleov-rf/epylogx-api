@@ -8,10 +8,12 @@ interface chatEntryInterface {
   receiver: Schema.Types.ObjectId /* User */
   sentDate: Date
   isLiked?: boolean
+  isHidden: boolean
+  isEdited: boolean
 }
 
 interface ChatEntryModel extends Model<chatEntryInterface> {
-  getRecentChatsToId(userId: string, days: Number): any
+  getRecentChatsToId(metaUserId: string, days: number): any
   getEntries(data: entriesDataQuery): any
 }
 

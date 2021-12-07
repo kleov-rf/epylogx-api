@@ -14,15 +14,6 @@ const storeOrderSchema = new Schema<storeOrderInterface>(
       required: true,
       ref: 'User',
     },
-    ticket: {
-      type: [
-        {
-          item: { type: Schema.Types.ObjectId, ref: 'StoreItem' },
-          units: Number,
-        },
-      ],
-      required: true,
-    },
     method: {
       type: String,
       required: true,
@@ -40,6 +31,11 @@ const storeOrderSchema = new Schema<storeOrderInterface>(
       type: String,
       required: true,
       enum: ['pendant', 'confirmed', 'shipped'],
+      default: 'pendant',
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
   },
   {
@@ -48,6 +44,12 @@ const storeOrderSchema = new Schema<storeOrderInterface>(
   }
 )
 
+storeOrderSchema.virtual('ticket', {
+  ref: 'StoreOrderItem',
+  localField: '_id',
+  foreignField: 'storeOrder',
+})
+
 storeOrderSchema.statics.getStoreOrder = async function ({ id }) {
   const query = {}
 
@@ -55,7 +57,10 @@ storeOrderSchema.statics.getStoreOrder = async function ({ id }) {
     Object.assign(query, { _id: id })
   }
 
-  const storeOrder = await this.findOne(query).populate('purchaser')
+  const storeOrder = await this.findOne(query).populate('purchaser').populate({
+    path: 'ticket',
+    populate: 'storeItem',
+  })
 
   return storeOrder
 }
@@ -68,6 +73,7 @@ storeOrderSchema.statics.getStoreOrders = async function ({
   beforeDate,
   afterDate,
   state,
+  isActive,
 }: storeOrderDataQuery) {
   const query = {}
 
@@ -96,8 +102,11 @@ storeOrderSchema.statics.getStoreOrders = async function ({
   if (state && validator.isIn(state, ['pendant', 'confirmed', 'shipped'])) {
     Object.assign(query, { state })
   }
+  if (isActive != undefined) {
+    Object.assign(query, { isActive })
+  }
 
-  const storeOrders = await this.find(query)
+  const storeOrders = await this.find(query).populate('ticket')
 
   if (!storeOrders) {
     throw new Error(`Couldn't find any storeOrders results with data: ${query}`)

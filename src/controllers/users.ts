@@ -9,7 +9,7 @@ import {
   User,
   UserLikedPost,
   UserPodcast,
-  UserSavedPost
+  UserSavedPost,
 } from '../models'
 import { UserInterest } from '../models/social'
 
@@ -49,7 +49,7 @@ const usersGet = async (req: Request, res: Response) => {
     Object.assign(query, { isActive: !!isActive })
   }
 
-  const users = User.getUsers(query)
+  const users = await User.getUsers(query)
 
   return res.json(users)
 }
@@ -232,4 +232,3 @@ export {
   createUserSavedPost,
   notifyUserFollowing,
 }
-

@@ -10,15 +10,9 @@ const PostSchema = new Schema<postInterface>(
       type: Schema.Types.ObjectId,
       ref: 'PostType',
     },
-    social: {
-      commentsEnabled: {
-        type: Boolean,
-        default: true,
-      },
-      likes: {
-        type: Number,
-        default: 0,
-      },
+    commentsEnabled: {
+      type: Boolean,
+      default: true,
     },
     uploadDate: Date,
     releaseDate: Date,

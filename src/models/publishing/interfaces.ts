@@ -79,11 +79,7 @@ interface postInterface extends DescriptableInterface {
     mains: Schema.Types.ObjectId[] /* Category[] N:M */
     subs: Schema.Types.ObjectId[] /* Category[] N:M */
   }
-  social?: {
-    comments: Schema.Types.ObjectId[] /* Comment[] 1:N */
-    commentsEnabled: boolean
-    likes: number
-  }
+  commentsEnabled: boolean
   stats?: {}
   uploadDate: Date
   releaseDate?: Date

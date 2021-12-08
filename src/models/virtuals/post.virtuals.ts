@@ -26,7 +26,7 @@ const assignPostVirtuals = (PostSchema: Schema) => {
 
   // -------- COMMENTS --------
   // _id | author | post | text | likes | replies | superComment | isHidden
-  PostSchema.virtual('social.comments', {
+  PostSchema.virtual('comments', {
     ref: 'Comments',
     localField: '_id',
     foreignField: 'post',

@@ -73,7 +73,6 @@ const login = async (req: Request, res: Response) => {
       token,
     })
   } catch (error) {
-    console.log(error)
     res.status(500).json({
       error: true,
       reason: "Couldn't complete login, contact with an administrator.",
@@ -132,7 +131,6 @@ const googleSignIn = async (req: Request, res: Response) => {
       token,
     })
   } catch (error) {
-    console.log(error)
     res.status(400).json({
       error: true,
       reason: 'Google token is not valid',

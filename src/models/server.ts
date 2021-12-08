@@ -127,7 +127,7 @@ class epyServer {
     // We run our express-socket server and print
     // its link in console
     this.server.listen(this.port, () => {
-      console.log(`Server running on http://localhost:${this.port}`)
+      // console.log(`Server running on http://localhost:${this.port}`)
     })
   }
 }

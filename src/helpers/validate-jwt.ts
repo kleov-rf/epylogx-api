@@ -12,7 +12,6 @@ const generateJWT = (uid: string, isAdmin: boolean) => {
       },
       (err, token) => {
         if (err) {
-          console.log(err)
           reject('No se pudo generar el token')
         } else {
           resolve(token)

@@ -109,7 +109,6 @@ const modifyPodcast = async (req: Request, res: Response) => {
       }
     })
 
-    console.log(oldOwners)
 
     await oldOwners.forEach(async (owner: any) => {
       await UserPodcast.deleteOne({ podcast: id, owner })

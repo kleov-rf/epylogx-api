@@ -91,7 +91,6 @@ const modifyStoreItem = async (req: Request, res: Response) => {
     Object.assign(data, { isActive })
   }
 
-  console.log(data)
 
   const modifiedStoreItem = await StoreItem.findByIdAndUpdate(id, data, {
     new: true,

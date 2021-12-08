@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "tsc;node ./dist/app.js",
-    "heroku-postbuild": "tsc;node ./dist/app.js"
+    "heroku-postbuild": "node ./dist/app.js"
   },
   "keywords": [],
   "author": "",

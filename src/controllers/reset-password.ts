@@ -28,7 +28,7 @@ const postResetPassword = async (req: Request, res: Response) => {
   sgMail
     .send(mailOptions)
     .then(data => res.json({ data }))
-    .catch(error => console.error(error))
+    .catch(error => res.json({ error }))
 }
 
 export default postResetPassword

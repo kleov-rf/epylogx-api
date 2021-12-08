@@ -39,7 +39,7 @@ class epyServer {
     this.server = createServer(this.app)
     this.io = require('socket.io')(this.server, {
       cors: {
-        origin: 'http://localhost:3000',
+        origin: 'https://epylogx.herokuapp.com/',
         methods: ['GET', 'POST'],
       },
     })

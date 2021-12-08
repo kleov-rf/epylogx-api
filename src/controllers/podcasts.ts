@@ -34,6 +34,14 @@ const getPodcastPosts = async (req: Request, res: Response) => {
   return res.json(podcastPosts)
 }
 
+const getPodcastOwners = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  const owners = await UserPodcast.getUsersPodcasts({ podcast: id })
+
+  return res.json(owners)
+}
+
 const createPodcast = async (req: Request, res: Response) => {
   const {
     owners,
@@ -134,4 +142,5 @@ export {
   createPodcast,
   modifyPodcast,
   deletePodcast,
+  getPodcastOwners,
 }

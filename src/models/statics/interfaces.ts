@@ -64,7 +64,7 @@ interface usersDataQuery {
   userId?: string
   email?: string
   name?: string
-  isAdmin?: boolean
+  isActive?: boolean
 }
 
 export {

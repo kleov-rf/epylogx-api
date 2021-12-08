@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { check } from 'express-validator'
 import {
   adminGet,
+  adminGetSubordinates,
   adminsDelete,
   adminsGet,
   adminsPost,
@@ -88,11 +89,28 @@ router.get(
   adminsGet
 )
 
-router.get('/:id', [validateJWT, isMetaUserAdmin, validateFields], adminGet)
+router.get(
+  '/:id',
+  [
+    validateJWT,
+    isMetaUserAdmin,
+    check('id', 'id field value must be a valid Mongo Object Id').isMongoId(),
+    check('id').custom(existsAdminByObjectId),
+    validateFields,
+  ],
+  adminGet
+)
+
 router.get(
   '/:id/subAdmins',
-  [validateJWT, isMetaUserAdmin, validateFields],
-  adminsGet
+  [
+    validateJWT,
+    isMetaUserAdmin,
+    check('id', 'id field value must be a valid Mongo Object Id').isMongoId(),
+    check('id').custom(existsAdminByObjectId),
+    validateFields,
+  ],
+  adminGetSubordinates
 )
 
 router.post(
@@ -149,6 +167,8 @@ router.put(
     validateJWT,
     isMetaUserAdmin,
     hasRoles({ adminManage: true }),
+    check('id', 'id field value must be a valid Mongo Object Id').isMongoId(),
+    check('id').custom(existsAdminByObjectId),
     check(
       'adminId',
       'userId field value must match a-Z 0-9 _-. and length {3,15}'
@@ -191,6 +211,8 @@ router.delete(
     validateJWT,
     isMetaUserAdmin,
     hasRoles({ adminManage: true }),
+    check('id', 'id field value must be a valid Mongo Object Id').isMongoId(),
+    check('id').custom(existsAdminByObjectId),
     validateFields,
   ],
   adminsDelete

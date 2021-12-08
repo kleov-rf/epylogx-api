@@ -58,6 +58,43 @@ const getPost = async (req: Request, res: Response) => {
   return res.json(post)
 }
 
+const getTypeOfPost = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  const { type } = await Post.getPost({ id })
+
+  return res.json(type)
+}
+
+const getPostAuthors = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  const authors = await Authorship.getAuthorships({ post: id })
+
+  return res.json(authors)
+}
+
+const getPostCategories = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { isBranch, isMain } = req.query
+
+  const categories = await PostCategory.getPostsCategories({ post: id })
+
+  if (isBranch) {
+    return res.json(
+      categories.filter(({ category }: any) => category.superCategory)
+    )
+  }
+
+  if (isMain) {
+    return res.json(
+      categories.filter(({ category }: any) => !category.superCategory)
+    )
+  }
+
+  return res.json(categories)
+}
+
 const createPost = async (req: Request, res: Response) => {
   const { info, type, authors, categories, social, uploadDate, releaseDate } =
     req.body
@@ -204,4 +241,13 @@ const deletePost = async (req: Request, res: Response) => {
   return res.json(deletedPost)
 }
 
-export { getPost, getPosts, createPost, modifyPost, deletePost }
+export {
+  getPost,
+  getPosts,
+  createPost,
+  modifyPost,
+  deletePost,
+  getPostAuthors,
+  getPostCategories,
+  getTypeOfPost,
+}

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Isced } from '../models'
+import { Category, Isced } from '../models'
 import validator from 'validator'
 
 const getISCED = async (req: Request, res: Response) => {
@@ -37,6 +37,14 @@ const getISCEDS = async (req: Request, res: Response) => {
   const isceds = await Isced.getISCEDS(query)
 
   return res.json(isceds)
+}
+
+const getISCEDCategories = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  const categories = await Category.getCategories({ isced: id })
+
+  return res.json(categories)
 }
 
 const createISCED = async (req: Request, res: Response) => {
@@ -77,4 +85,11 @@ const deleteISCED = async (req: Request, res: Response) => {
   return res.json(isced)
 }
 
-export { getISCED, getISCEDS, createISCED, updateISCED, deleteISCED }
+export {
+  getISCED,
+  getISCEDS,
+  createISCED,
+  updateISCED,
+  deleteISCED,
+  getISCEDCategories,
+}

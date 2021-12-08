@@ -4,6 +4,7 @@ import {
   createISCED,
   deleteISCED,
   getISCED,
+  getISCEDCategories,
   getISCEDS,
   updateISCED,
 } from '../controllers/isceds'
@@ -48,6 +49,16 @@ router.get(
     validateFields,
   ],
   getISCED
+)
+
+router.get(
+  '/:id/categories',
+  [
+    check('id', 'id must be a valid Mongo ObjectId').isMongoId(),
+    check('id').custom(existsISCEDByObjectId),
+    validateFields,
+  ],
+  getISCEDCategories
 )
 
 router.post(

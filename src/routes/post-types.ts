@@ -3,6 +3,7 @@ import { check } from 'express-validator'
 import {
   createPostType,
   deletePostType,
+  getPostsByType,
   getPostType,
   getPostTypes,
   modifyPostType,
@@ -36,6 +37,17 @@ router.get(
   ],
   getPostType
 )
+
+router.get(
+  '/:id/posts',
+  [
+    check('id', 'id must be a valid Mongo ObjectId').isMongoId(),
+    check('id').custom(existsPostTypeByObjectId),
+    validateFields,
+  ],
+  getPostsByType
+)
+
 router.post(
   '/',
   [

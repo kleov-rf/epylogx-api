@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { Category, Isced, PostCategory } from '../models'
+import { UserInterest } from '../models/social'
 
 const categoryGet = async (req: Request, res: Response) => {
   const { id } = req.params
@@ -61,6 +62,14 @@ const categoryPostsGet = async (req: Request, res: Response) => {
   return res.json(posts)
 }
 
+const getCategoryInterestedUsers = async (req: Request, res: Response) => {
+  const { id } = req.params
+
+  const interestedUsers = await UserInterest.getUserInterests({ category: id })
+
+  return res.json(interestedUsers)
+}
+
 const categoriesPost = async (req: Request, res: Response) => {
   const { isced, title, superCategory, description } = req.body
 
@@ -117,4 +126,5 @@ export {
   categoriesDelete,
   categoryBranchesGet,
   categoryPostsGet,
+  getCategoryInterestedUsers,
 }

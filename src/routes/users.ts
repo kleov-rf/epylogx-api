@@ -36,7 +36,28 @@ import { hasRoles } from '../middlewares/validate-metauser'
 
 const router = Router()
 
-router.get('/', [], usersGet)
+router.get(
+  '/',
+  [
+    check('userId', 'userId field value must be alphanumeric')
+      .optional()
+      .isAlphanumeric(),
+    check('email', 'email field value must be alphanumeric and ignores @._-')
+      .optional()
+      .isAlphanumeric(undefined, { ignore: '@._-' }),
+    check('name', 'name field value accepts [A-zñ]')
+      .optional()
+      .isAlpha('es-ES'),
+    check(
+      'isActive',
+      'isActive field value must be a valid boolean representation'
+    )
+      .optional()
+      .isBoolean(),
+    validateFields,
+  ],
+  usersGet
+)
 
 router.get('/:id', [], userGet)
 

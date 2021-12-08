@@ -33,7 +33,7 @@ AuthorshipSchema.statics.getAuthorships = async function ({
     Object.assign(query, { post })
   }
 
-  const authorship = await this.find(query)
+  const authorship = await this.find(query).populate('author').populate('post')
 
   if (!authorship) {
     throw new Error(`Couldn't find any authorship results with data: ${query}`)

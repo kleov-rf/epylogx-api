@@ -27,12 +27,13 @@ const adminGetSubordinates = async (req: Request, res: Response) => {
   const { id } = req.params
   const query = {}
 
-  if (validator.isMongoId(id)) {
+  if (id) {
     Object.assign(query, { subordinateOf: id })
   }
 
   const admin = await Admin.getAdmins(query)
-  return res.json({ admin })
+
+  return res.json(admin)
 }
 
 const adminsGet = async (req: Request, res: Response) => {
@@ -49,7 +50,7 @@ const adminsGet = async (req: Request, res: Response) => {
     storeManage,
     storeOrdersManage,
     iscedManage,
-    postTypeManage
+    postTypeManage,
   } = <any>req.query
 
   const roles = {}
@@ -96,7 +97,7 @@ const adminsGet = async (req: Request, res: Response) => {
     roles,
   })
 
-  return res.json({ admins })
+  return res.json(admins)
 }
 
 const adminsPost = async (req: Request, res: Response) => {

@@ -39,13 +39,13 @@ interface RecordModel extends Model<manageRecordInterface> {
 }
 
 interface RecordDataQuery {
-  action: string
-  by: string
-  to: string
-  toType: string
-  beforeDate: Date
-  afterDate: Date
-  date: Date
+  action?: string
+  by?: string
+  to?: string
+  toType?: string
+  beforeDate?: string
+  afterDate?: string
+  date?: string
 }
 
 interface reportInterface {

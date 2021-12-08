@@ -1,6 +1,7 @@
+import bcrypt from 'bcryptjs'
 import { Request, Response } from 'express'
+import validator from 'validator'
 import {
-  Admin,
   Authorship,
   Chat,
   Follow,
@@ -8,23 +9,18 @@ import {
   User,
   UserLikedPost,
   UserPodcast,
-  UserSavedPost,
+  UserSavedPost
 } from '../models'
-import bcrypt from 'bcryptjs'
-import validator from 'validator'
 import { UserInterest } from '../models/social'
-import { Document, Types } from 'mongoose'
-import { userInterface } from '../models/social/interfaces'
 
 const userGet = async (req: Request, res: Response) => {
   const { id } = req.params
-  const { isAdmin } = <any>req
   let user
   try {
     if (validator.isMongoId(id)) {
-      user = await User.getUser({ id: id, isAdmin })
+      user = await User.getUser({ id: id })
     } else {
-      user = await User.getUser({ userId: id, isAdmin })
+      user = await User.getUser({ userId: id })
     }
   } catch (error) {
     res.status(400).json({
@@ -36,17 +32,24 @@ const userGet = async (req: Request, res: Response) => {
 }
 
 const usersGet = async (req: Request, res: Response) => {
-  const { userId = '', email = '', name = '' } = req.query
-  const { isAdmin } = <any>req
+  const { userId, email, name, isActive } = req.query
 
-  let users
-  if (
-    typeof userId == 'string' &&
-    typeof email == 'string' &&
-    typeof name == 'string'
-  ) {
-    users = await User.getUsers({ userId, email, name, isAdmin })
+  const query = {}
+
+  if (userId) {
+    Object.assign(query, { userId })
   }
+  if (email) {
+    Object.assign(query, { email })
+  }
+  if (name) {
+    Object.assign(query, { name })
+  }
+  if (isActive != undefined) {
+    Object.assign(query, { isActive: !!isActive })
+  }
+
+  const users = User.getUsers(query)
 
   return res.json(users)
 }
@@ -229,3 +232,4 @@ export {
   createUserSavedPost,
   notifyUserFollowing,
 }
+

@@ -8,6 +8,7 @@ import {
   categoryBranchesGet,
   categoryGet,
   categoryPostsGet,
+  getCategoryInterestedUsers,
 } from '../controllers/categories'
 import {
   existsCategoryByObjectId,
@@ -60,6 +61,16 @@ router.get(
     validateFields,
   ],
   categoryPostsGet
+)
+
+router.get(
+  '/:id/interested',
+  [
+    check('id', 'category id must be a valid Mongo ObjectId').isMongoId(),
+    check('id').custom(existsCategoryByObjectId),
+    validateFields,
+  ],
+  getCategoryInterestedUsers
 )
 
 router.post(

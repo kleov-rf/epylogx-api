@@ -8,12 +8,12 @@ const assignUserStatics = (userSchema: Schema) => {
     userId,
     email,
     name,
-    isAdmin = false,
+    isActive,
   }: usersDataQuery) {
     const query = {}
 
-    if (!isAdmin) {
-      Object.assign(query, { isActive: true })
+    if (isActive != undefined) {
+      Object.assign(query, { isActive: !!isActive })
     }
 
     if (id && validator.isMongoId(id)) {
@@ -53,12 +53,12 @@ const assignUserStatics = (userSchema: Schema) => {
     userId,
     email,
     name,
-    isAdmin = false,
+    isActive
   }: usersDataQuery) {
     const query = {}
 
-    if (!isAdmin) {
-      Object.assign(query, { isActive: true })
+    if (isActive != undefined) {
+      Object.assign(query, { isActive: !!isActive })
     }
 
     if (

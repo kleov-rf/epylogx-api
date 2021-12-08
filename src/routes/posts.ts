@@ -6,6 +6,9 @@ import {
   createPost,
   modifyPost,
   deletePost,
+  getTypeOfPost,
+  getPostAuthors,
+  getPostCategories,
 } from '../controllers/posts'
 import {
   existsCategoryByObjectId,
@@ -77,6 +80,46 @@ router.get(
     validateFields,
   ],
   getPost
+)
+
+router.get(
+  '/:id/type',
+  [
+    check('id', 'id must be a valid Mongo ObjectId').isMongoId(),
+    check('id').custom(existsPostByObjectId),
+    validateFields,
+  ],
+  getTypeOfPost
+)
+router.get(
+  '/:id/authors',
+  [
+    check('id', 'id must be a valid Mongo ObjectId').isMongoId(),
+    check('id').custom(existsPostByObjectId),
+    validateFields,
+  ],
+  getPostAuthors
+)
+router.get(
+  '/:id/categories',
+  [
+    check('id', 'id must be a valid Mongo ObjectId').isMongoId(),
+    check('id').custom(existsPostByObjectId),
+    check(
+      'isBranch',
+      'isBranch field value must be a valid boolean representation'
+    )
+      .optional()
+      .isBoolean(),
+    check(
+      'isBranch',
+      'isBranch field value must be a valid boolean representation'
+    )
+      .optional()
+      .isBoolean(),
+    validateFields,
+  ],
+  getPostCategories
 )
 
 router.post(

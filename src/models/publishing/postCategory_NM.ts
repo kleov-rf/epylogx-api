@@ -34,6 +34,8 @@ PostCategorySchema.statics.getPostsCategories = async function ({
   }
 
   const postsCategories = await this.find(query)
+    .populate('post')
+    .populate('category')
 
   if (!postsCategories) {
     throw new Error(

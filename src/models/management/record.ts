@@ -22,9 +22,9 @@ const RecordSchema = new Schema<manageRecordInterface>(
       id: {
         type: Schema.Types.ObjectId,
         required: true,
-        refPath: 'idModel',
-      },
-      idModel: {
+        refPath: 'type',
+      },  
+      type: {
         type: String,
         required: true,
         enum: [
@@ -40,7 +40,6 @@ const RecordSchema = new Schema<manageRecordInterface>(
           'Podcast',
         ],
       },
-      type: { type: String, default: 'type' },
     },
     description: {
       type: String,
@@ -80,7 +79,7 @@ RecordSchema.statics.getRecords = async function ({
 }: RecordDataQuery) {
   const query = {}
 
-  if (action && validator.isMongoId(action)) {
+  if (action) {
     Object.assign(query, { action })
   }
   if (by && validator.isMongoId(by)) {
@@ -93,20 +92,20 @@ RecordSchema.statics.getRecords = async function ({
     Object.assign(query, { toType })
   }
   if (beforeDate) {
-    Object.assign(query, { recordDate: { $lte: minifiedISOString(date) } })
+    Object.assign(query, {
+      recordDate: { $lte: minifiedISOString(new Date(<any>date)) },
+    })
   }
   if (afterDate) {
-    Object.assign(query, { recordDate: { $gte: minifiedISOString(date) } })
+    Object.assign(query, {
+      recordDate: { $gte: minifiedISOString(new Date(<any>date)) },
+    })
   }
   if (date) {
-    Object.assign(query, { recordDate: minifiedISOString(date) })
+    Object.assign(query, { recordDate: minifiedISOString(new Date(<any>date)) })
   }
 
   const records = await this.find(query)
-
-  if (!records) {
-    throw new Error(`Couldn't find any records results with data: ${query}`)
-  }
 
   return records
 }

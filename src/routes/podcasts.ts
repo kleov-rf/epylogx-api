@@ -4,6 +4,7 @@ import {
   createPodcast,
   deletePodcast,
   getPodcast,
+  getPodcastOwners,
   getPodcastPosts,
   getPodcasts,
   modifyPodcast,
@@ -51,6 +52,16 @@ router.get(
     validateFields,
   ],
   getPodcastPosts
+)
+
+router.get(
+  '/:id/owners',
+  [
+    check('id', 'id field must be a valid Mongo ObjectId').isMongoId(),
+    check('id').custom(existsPodcastById),
+    validateFields,
+  ],
+  getPodcastOwners
 )
 
 router.post(

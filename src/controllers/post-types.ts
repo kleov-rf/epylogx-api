@@ -23,6 +23,12 @@ const getPostType = async (req: Request, res: Response) => {
   return res.json(postType)
 }
 
+const getPostsByType = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const posts = await Post.getPosts({ type: id })
+  return res.json(posts)
+}
+
 const createPostType = async (req: Request, res: Response) => {
   const { name, allowedExtensions } = req.body
   const postType = new PostType({
@@ -65,4 +71,5 @@ export {
   createPostType,
   modifyPostType,
   deletePostType,
+  getPostsByType,
 }

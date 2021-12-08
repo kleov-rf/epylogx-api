@@ -7,6 +7,8 @@ import {
   Podcast,
   Post,
   PostType,
+  Record,
+  Report,
   StoreItem,
   StoreOrder,
   User,
@@ -148,6 +150,44 @@ const existsChatEntry = async (id: string) => {
   if (!chatEntry) throw new Error(`Chat entry with id ${id} doesn't exist`)
 }
 
+const existsRecordEntry = async (id: string) => {
+  const recordEntry = await Record.findById(id)
+
+  if (!recordEntry) throw new Error(`Record entry with id ${id} doesn't exist`)
+}
+
+const existsPostReport = async (id: string) => {
+  const postReport = await Report.findById(id)
+
+  if (!postReport) throw new Error(`Post report with id ${id} doesn't exist`)
+}
+
+const existsRecordActionObject = async (id: string) => {
+  const databaseEntity = await Promise.all([
+    User.findById(id),
+    Admin.findById(id),
+    Post.findById(id),
+    StoreItem.findById(id),
+    StoreOrder.findById(id),
+    Category.findById(id),
+    Report.findById(id),
+    Comment.findById(id),
+    Isced.findById(id),
+    Podcast.findById(id),
+  ])
+
+  if (!databaseEntity)
+    throw new Error(`entity with id ${id} is not a [User,Admin,
+      Post,
+      StoreItem,
+      StoreOrder,
+      Category,
+      Report,
+      Comment,
+      Isced,
+      Podcast]`)
+}
+
 export {
   existsUserByObjectId,
   existsAdminByObjectId,
@@ -166,4 +206,7 @@ export {
   existsMetaUserbyObjectId,
   existsChatEntry,
   existsStoreOrderByObjectId,
+  existsPostReport,
+  existsRecordEntry,
+  existsRecordActionObject,
 }

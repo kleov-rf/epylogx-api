@@ -39,7 +39,7 @@ class epyServer {
     this.server = createServer(this.app)
     this.io = require('socket.io')(this.server, {
       cors: {
-        origin: 'https://epylogx.herokuapp.com',
+        origin: 'http://192.168.1.134:3000',
         methods: ['GET', 'POST'],
       },
     })
@@ -127,7 +127,7 @@ class epyServer {
     // We run our express-socket server and print
     // its link in console
     this.server.listen(this.port, () => {
-      // console.log(`Server running on http://localhost:${this.port}`)
+      console.log(`Server running on http://localhost:${this.port}`)
     })
   }
 }

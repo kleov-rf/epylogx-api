@@ -35,7 +35,7 @@ const login = async (req: Request, res: Response) => {
 
     const metaUser = user ?? admin
     const { adminId } = <any>metaUser
-    const isAdmin = adminId ?? false
+    const isAdmin = !!adminId
 
     if (!metaUser) {
       return res.status(401).json({

@@ -16,6 +16,7 @@ import validateFields from '../middlewares/validate-fields'
 import validateJWT from '../middlewares/validate-jwt'
 import {
   hasChatEntryRoles,
+  hasChatRoles,
   hasRoles,
   isMetaUserAdmin,
   isSameMetaUserModel,
@@ -27,8 +28,7 @@ router.get(
   '/',
   [
     validateJWT,
-    isMetaUserAdmin,
-    hasRoles({ userManage: true }),
+    hasChatRoles({ adminManage: true }),
     check('from', 'from field value must be a valid Mongo ObjectId')
       .optional()
       .isMongoId(),

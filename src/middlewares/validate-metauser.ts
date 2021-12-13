@@ -417,6 +417,72 @@ const hasCommentRoles = ({
   }
 }
 
+const hasChatRoles = ({
+  userManage = false,
+  adminManage = false,
+  postManage = false,
+  categoryManage = false,
+  storeManage = false,
+  podcastManage = false,
+  storeOrdersManage = false,
+  iscedManage = false,
+  postTypeManage = false,
+}) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const {
+      metaUser,
+      isAdmin,
+      query: { to, from },
+    } = <any>req
+
+    if (!isAdmin && to != metaUser._id && from != metaUser._id) {
+      return res.status(401).json({
+        error: true,
+        reason:
+          'You must be an Admin or the author of this chat entry to perform this action',
+      })
+    }
+    if (isAdmin) {
+      const roles = {
+        userManage,
+        adminManage,
+        postManage,
+        categoryManage,
+        storeManage,
+        podcastManage,
+        storeOrdersManage,
+        iscedManage,
+        postTypeManage,
+      }
+
+      const requiredRoles = Object.keys(roles).filter(
+        role => (roles as any)[role]
+      )
+      const metaUserRoles = Object.keys(metaUser.roles).filter(
+        role => metaUser.roles[role]
+      )
+
+      if (
+        isAdmin &&
+        !(<any>metaUserRoles).includes(...requiredRoles) &&
+        to != metaUser._id &&
+        from != metaUser._id
+      ) {
+        return res.status(401).json({
+          error: true,
+          reason: `You don't have enough roles to perform this action. Required: ${Object.keys(
+            roles
+          ).filter(key => (roles as any)[key])}, yours: ${Object.keys(
+            roles
+          ).filter(key => metaUser.roles[key])}`,
+        })
+      }
+    }
+
+    next()
+  }
+}
+
 const hasChatEntryRoles = ({
   userManage = false,
   adminManage = false,
@@ -494,4 +560,5 @@ export {
   hasCommentRoles,
   isSameMetaUserModel,
   hasChatEntryRoles,
+  hasChatRoles
 }

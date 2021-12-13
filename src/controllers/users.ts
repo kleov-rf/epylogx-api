@@ -24,6 +24,7 @@ const userGet = async (req: Request, res: Response) => {
     }
   } catch (error) {
     res.status(400).json({
+      error: true,
       msg: `Couldn't find any user with id: ${id}`,
     })
   }

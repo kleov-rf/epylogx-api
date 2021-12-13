@@ -1,3 +1,4 @@
+import { adminInterface } from '../management/interfaces'
 import { userInterface } from './interfaces'
 
 export interface MessageInterface {
@@ -26,9 +27,11 @@ class Message implements MessageInterface {
 class messagesChat {
   messagesArray: any[]
   users: { [key: string]: userInterface }
+  admins: { [key: string]: adminInterface }
   constructor() {
     this.messagesArray = []
     this.users = {}
+    this.admins = {}
   }
 
   get lasts() {
@@ -38,6 +41,10 @@ class messagesChat {
 
   get usersArray() {
     return Object.values(this.users)
+  }
+  
+  get adminsArray() {
+    return Object.values(this.admins)
   }
 
   sendMessage(data: MessageInterface) {
@@ -51,6 +58,15 @@ class messagesChat {
 
   disconnectUser(user: userInterface) {
     delete this.users[(<any>user)._id]
+  }
+
+  connectAdmin(admin: adminInterface) {
+    const id = `${(<any>admin)._id}`
+    this.admins[id] = admin
+  }
+
+  disconnectAdmin(admin: adminInterface) {
+    delete this.admins[(<any>admin)._id]
   }
 }
 

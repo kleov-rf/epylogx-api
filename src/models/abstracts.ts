@@ -51,7 +51,10 @@ const metaUserSchema = new Schema<metaUserInterface>(
       required: [true, 'password is required'],
     },
     birthDate: Date,
-    googleSignIn: Boolean,
+    googleSignIn: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     toJSON: { virtuals: true },

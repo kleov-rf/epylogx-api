@@ -7,6 +7,7 @@ import {
   adminsGet,
   adminsPost,
   adminsPut,
+  getAdminRecentChats,
 } from '../controllers/admins'
 import {
   existsAdminByObjectId,
@@ -27,9 +28,19 @@ router.get(
     check('name', 'name query param must be alphanumeric')
       .optional()
       .isAlpha('es-ES', { ignore: ' ' }),
+    check('email', 'email field value must be alphanumeric and ignores @._-')
+      .optional()
+      .isAlphanumeric(undefined, { ignore: '@._-' }),
     check('isSub', 'isSub query param must be a valid boolean interpretation')
       .optional()
       .isBoolean(),
+    check(
+      'adminId',
+      'userId field value must match a-Z 0-9 _-. and length {3,15}'
+    )
+      .optional()
+      .isAlphanumeric(undefined, { ignore: '_-.' })
+      .isLength({ min: 3, max: 15 }),
     check(
       'userManage',
       'userManage query param must be a valid boolean interpretation'
@@ -94,8 +105,8 @@ router.get(
   [
     validateJWT,
     isMetaUserAdmin,
-    check('id', 'id field value must be a valid Mongo Object Id').isMongoId(),
-    check('id').custom(existsAdminByObjectId),
+    // check('id', 'id field value must be a valid Mongo Object Id').isMongoId(),
+    // check('id').custom(existsAdminByObjectId),
     validateFields,
   ],
   adminGet
@@ -216,6 +227,24 @@ router.delete(
     validateFields,
   ],
   adminsDelete
+)
+
+router.get(
+  '/:id/chats',
+  [
+    validateJWT,
+    isMetaUserAdmin,
+    check('id', 'id field value must be a valid Mongo ObjecId').isMongoId(),
+    check('id').custom(existsAdminByObjectId),
+    check(
+      'days',
+      'days field value must be a valid number representation, minimum 1'
+    )
+      .optional()
+      .isInt({ min: 1 }),
+    validateFields,
+  ],
+  getAdminRecentChats
 )
 
 export default router

@@ -1,5 +1,7 @@
+import { AES, enc } from 'crypto-js'
 import { Socket } from 'socket.io'
 import { checkJWT } from '../helpers/validate-jwt'
+import { Chat } from '../models'
 import messagesChat, { MessageInterface } from '../models/social/socketChat'
 
 const chat = new messagesChat()
@@ -10,28 +12,64 @@ const socketController = async (socket: Socket, io: any) => {
   if (!user) {
     return socket.disconnect()
   }
+
+  socket.join(user.id)
+  socket.emit('this-user', user)
   // Add connected user
-  chat.connectUser(<any>user)
+  if ((<any>user).adminId) {
+    chat.connectAdmin(<any>user)
+  } else {
+    chat.connectUser(<any>user)
+  }
+
+  io.emit('active-admins', chat.adminsArray)
   io.emit('active-users', chat.usersArray)
-  // socket.emit('get-messages', chat.lasts)
-  // // Connect to another user
-  // socket.join(user._id)
-  // // Clean when somebody disconnects
-  // socket.on('disconnect', () => {
-  //   chat.disconnectUser(user._id)
-  //   io.emit('active-users', chat.usersArray)
-  // })
-  // // Send message
-  // socket.on(
-  //   'send-message',
-  //   ({ transmitter, receiver, text }: MessageInterface) => {
-  //     if (receiver) {
-  //       socket.to(receiver).emit('mensaje-privado', { transmitter, text })
-  //     } else {
-  //       io.emit('recibir-mensajes', chat.lasts)
-  //     }
-  //   }
-  // )
+  socket.on(
+    'send-message',
+    async ({
+      message: {
+        transmitter,
+        receiver,
+        text,
+        isLiked,
+        isEdited,
+        isHidden,
+        sentDate,
+      },
+    }) => {
+      const encryptedText = AES.encrypt(
+        text,
+        <any>process.env.SECRETORPRIVATEKEY
+      )
+      const data = {
+        transmitter,
+        receiver,
+        text: encryptedText,
+        isLiked,
+        isEdited,
+        isHidden,
+        sentDate,
+      }
+      const newMessage = new Chat(data)
+      await newMessage.save()
+      const decryptedText = AES.decrypt(
+        newMessage.text,
+        <any>process.env.SECRETORPRIVATEKEY
+      ).toString(enc.Utf8)
+      Object.assign(newMessage, { text: decryptedText })
+      socket.to(receiver).emit('get-message', { message: newMessage })
+    }
+  )
+
+  socket.on('disconnect', () => {
+    if ((<any>user).adminId) {
+      chat.disconnectAdmin(<any>user)
+      io.emit('active-users', chat.usersArray)
+    } else {
+      chat.disconnectUser(<any>user)
+      io.emit('active-admins', chat.adminsArray)
+    }
+  })
 }
 
 export default socketController

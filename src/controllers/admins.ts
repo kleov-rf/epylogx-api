@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { Admin } from '../models'
+import { Admin, Chat } from '../models'
 import bcrypt from 'bcryptjs'
 import validator from 'validator'
 
@@ -14,7 +14,7 @@ const adminGet = async (req: Request, res: Response) => {
   }
   try {
     const admin = await Admin.getAdmin(query)
-    return res.json({ admin })
+    return res.json(admin)
   } catch (error) {
     res.status(400).json({
       errors: true,
@@ -100,6 +100,18 @@ const adminsGet = async (req: Request, res: Response) => {
   return res.json(admins)
 }
 
+const getAdminRecentChats = async (req: Request, res: Response) => {
+  const { id } = req.params
+  const { days = 3 } = req.query
+  const adminRecentChats = await Chat.getRecentChatsToId(id, Number(days))
+
+  const recentChattedAdmins = await Promise.all(
+    adminRecentChats.map((id: any) => Admin.findById(id))
+  )
+
+  return res.json(recentChattedAdmins)
+}
+
 const adminsPost = async (req: Request, res: Response) => {
   const {
     adminId,
@@ -172,4 +184,5 @@ export {
   adminsPut,
   adminsDelete,
   adminGetSubordinates,
+  getAdminRecentChats,
 }

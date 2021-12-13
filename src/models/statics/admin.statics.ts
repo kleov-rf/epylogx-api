@@ -67,11 +67,17 @@ const assignAdminStatics = (adminSchema: Schema) => {
     }
     if (
       email &&
-      validator.isAlphanumeric(email, undefined, { ignore: '@._-' })
+      validator.isAlphanumeric(email, undefined, { ignore: '._-' })
     ) {
-      const regexEmailBase = email.includes('@') ? email : `${email}@`
-      const regexEmail = new RegExp(regexEmailBase, 'i')
+      const regexEmail = new RegExp(`${email}@`, 'i')
       Object.assign(query, { email: regexEmail })
+    }
+
+    if (
+      email &&
+      validator.isEmail(email, { domain_specific_validation: true })
+    ) {
+      Object.assign(query, { email })
     }
     if (name && validator.isAlpha(name, 'es-ES', { ignore: ' ' })) {
       const regexName = new RegExp(name,     'i')

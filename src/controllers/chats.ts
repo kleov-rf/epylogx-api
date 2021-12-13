@@ -3,9 +3,26 @@ import { Chat } from '../models'
 import { AES, enc } from 'crypto-js'
 
 const getChatsEntries = async (req: Request, res: Response) => {
-  const {} = req
+  const { from, to, text, recentDays, isLiked } = req.query
 
-  const chats = await Chat.getEntries({})
+  const query = {}
+  if (from) {
+    Object.assign(query, { from })
+  }
+  if (to) {
+    Object.assign(query, { to })
+  }
+  if (text) {
+    Object.assign(query, { text })
+  }
+  if (recentDays) {
+    Object.assign(query, { recentDays })
+  }
+  if (isLiked) {
+    Object.assign(query, { isLiked })
+  }
+
+  const chats = await Chat.getEntries(query)
 
   return res.json(
     chats.map((entry: { text: string | CryptoJS.lib.CipherParams }) => {
